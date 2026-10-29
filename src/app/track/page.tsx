@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -123,9 +124,18 @@ function TrackContent() {
     <div className="flex flex-col min-h-screen bg-slate-50">
       <Navbar />
 
-      {/* Header Banner */}
-      <section className="bg-[#0b2240] text-white py-12 px-4 sm:px-8 border-b-4 border-[#e22026]">
-        <div className="max-w-5xl mx-auto space-y-4">
+      {/* Header Banner with Logistics Backdrop */}
+      <section className="relative bg-[#0b2240] text-white py-14 px-4 sm:px-8 border-b-4 border-[#e22026] overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/hero-cargo.jpg"
+            alt="International Air Cargo Terminal"
+            fill
+            className="object-cover opacity-25"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#061426] via-[#0b2240]/95 to-[#0b2240]/85" />
+        </div>
+        <div className="max-w-5xl mx-auto space-y-4 relative z-10">
           <div className="flex items-center gap-2 text-xs font-bold text-red-300 uppercase tracking-wider">
             <Search className="w-4 h-4 text-[#e22026]" /> Official Consignment Tracking
           </div>

@@ -22,7 +22,9 @@ import {
   Building2, 
   ChevronRight,
   PhoneCall,
-  MapPin
+  MapPin,
+  Sparkles,
+  Zap
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -36,10 +38,10 @@ export default function HomePage() {
   };
 
   const sampleTrackingNumbers = [
-    { label: 'US → China (In Transit)', id: 'VED-2026-000101' },
-    { label: 'China → Nigeria (Transit Hub)', id: 'VED-2026-000102' },
-    { label: 'US → Nigeria (Out for Delivery)', id: 'VED-2026-000103' },
-    { label: 'Korea → US (Delivered)', id: 'VED-2026-000104' },
+    { label: 'US → China', id: 'VED-2026-000101' },
+    { label: 'China → Nigeria', id: 'VED-2026-000102' },
+    { label: 'US → Nigeria', id: 'VED-2026-000103' },
+    { label: 'Korea → US', id: 'VED-2026-000104' },
   ];
 
   const internationalRoutes = [
@@ -50,6 +52,7 @@ export default function HomePage() {
       freq: 'Daily Departures',
       highlight: 'Direct JFK/LAX to PVG/PEK',
       badge: 'High Volume',
+      img: '/images/air-cargo.jpg',
     },
     {
       origin: 'China',
@@ -58,6 +61,7 @@ export default function HomePage() {
       freq: '3x Weekly Cargo Flights',
       highlight: 'Guangzhou/Shenzhen to Lagos (LOS)',
       badge: 'Fast Express',
+      img: '/images/customs-port.jpg',
     },
     {
       origin: 'United States',
@@ -66,6 +70,7 @@ export default function HomePage() {
       freq: 'Daily Express Intake',
       highlight: 'Direct Hub to Lagos & Abuja',
       badge: 'Priority Medical & Tech',
+      img: '/images/courier-delivery.jpg',
     },
     {
       origin: 'South Korea',
@@ -74,6 +79,7 @@ export default function HomePage() {
       freq: 'Scheduled Cargo Lines',
       highlight: 'Incheon (ICN) to Chicago & LAX',
       badge: 'Electronics & Robotics',
+      img: '/images/hero-cargo.jpg',
     },
     {
       origin: 'China',
@@ -82,6 +88,7 @@ export default function HomePage() {
       freq: 'Continuous Line-Haul',
       highlight: 'Commercial E-Commerce & B2B',
       badge: 'Trade Corridor',
+      img: '/images/ocean-ship.jpg',
     },
     {
       origin: 'Nigeria',
@@ -90,16 +97,18 @@ export default function HomePage() {
       freq: 'Twice Weekly',
       highlight: 'Export Commodities & Courier',
       badge: 'Secured Line',
+      img: '/images/warehouse.jpg',
     },
   ];
 
   const services = [
     {
       title: 'International Air Freight',
-      desc: 'Rapid intercontinental air transport for urgent commercial freight, electronics, pharmaceuticals, and time-critical consignments.',
+      desc: 'Rapid intercontinental air transport for urgent commercial freight, precision tech, pharmaceuticals, and time-critical consignments.',
       icon: Plane,
       link: '/services#air-freight',
-      stat: '24–72 Hour Global Transit',
+      stat: '24–72h Global Transit',
+      image: '/images/air-cargo.jpg',
     },
     {
       title: 'Ocean & Maritime Shipping',
@@ -107,6 +116,7 @@ export default function HomePage() {
       icon: Ship,
       link: '/services#ocean-freight',
       stat: 'Economical Bulk Cargo',
+      image: '/images/ocean-ship.jpg',
     },
     {
       title: 'Express Door-to-Door Courier',
@@ -114,6 +124,7 @@ export default function HomePage() {
       icon: Truck,
       link: '/services#express-courier',
       stat: 'Signature-Verified Delivery',
+      image: '/images/courier-delivery.jpg',
     },
     {
       title: 'Customs Clearance & Brokerage',
@@ -121,6 +132,7 @@ export default function HomePage() {
       icon: FileText,
       link: '/services#customs',
       stat: '100% Regulatory Compliance',
+      image: '/images/customs-port.jpg',
     },
     {
       title: 'Secure Bonded Warehousing',
@@ -128,6 +140,7 @@ export default function HomePage() {
       icon: Building2,
       link: '/services#warehousing',
       stat: 'Short & Long Term Storage',
+      image: '/images/warehouse.jpg',
     },
     {
       title: 'Specialized & High-Value Cargo',
@@ -135,6 +148,7 @@ export default function HomePage() {
       icon: ShieldCheck,
       link: '/services#special-cargo',
       stat: 'Full Value Insurance',
+      image: '/images/cargo-crating.jpg',
     },
   ];
 
@@ -142,33 +156,42 @@ export default function HomePage() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[#0b2240] via-[#0f2d56] to-[#061426] text-white pt-16 pb-24 px-4 sm:px-8 overflow-hidden">
-        {/* Background Subtle Grid */}
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+      {/* Hero Section with Rich Logistics Background Imagery */}
+      <section className="relative min-h-[640px] bg-[#0b2240] text-white pt-16 pb-24 px-4 sm:px-8 overflow-hidden flex items-center">
+        {/* Background Logistics Image with Dark Navy Gradient Overlay */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/hero-cargo.jpg"
+            alt="International Air Cargo Terminal"
+            fill
+            className="object-cover object-center opacity-30"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#061426] via-[#0b2240]/90 to-[#0b2240]/80" />
+        </div>
 
-        <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="max-w-7xl mx-auto relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* Hero Left Content */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 bg-[#e22026]/20 border border-[#e22026]/40 px-3 py-1.5 rounded-full text-xs font-bold text-red-200">
+            <div className="inline-flex items-center gap-2 bg-[#e22026]/20 border border-[#e22026]/50 px-3.5 py-1.5 rounded-full text-xs font-bold text-red-200 backdrop-blur-xs">
               <span className="w-2 h-2 rounded-full bg-[#e22026] animate-pulse" />
               GLOBAL LOGISTICS NETWORK — FAST • SAFE • GLOBAL
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1]">
               Your Shipment. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-red-300">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-red-400">
                 Our Responsibility.
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-200 max-w-2xl leading-relaxed drop-shadow-xs">
               Precision international courier, bonded air cargo, maritime container freight, and real-time shipment visibility. Connecting the United States, China, Nigeria, South Korea, and global commerce hubs with uncompromising reliability.
             </p>
 
             {/* Prominent Live Tracking Box */}
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-2xl text-slate-900 border-4 border-slate-100/10">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-2xl text-slate-900 border-4 border-white/20 backdrop-blur-md">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-[#0b2240] flex items-center gap-1.5">
                   <Search className="w-4 h-4 text-[#e22026]" /> Track Real-Time Consignment
@@ -201,15 +224,15 @@ export default function HomePage() {
 
               {/* Sample Live Tracking IDs */}
               <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2 flex-wrap text-xs">
-                <span className="text-slate-400 font-medium">Quick Demo Lookups:</span>
+                <span className="text-slate-500 font-semibold">Demo Tracking IDs:</span>
                 {sampleTrackingNumbers.map((s) => (
                   <button
                     key={s.id}
                     type="button"
                     onClick={() => router.push(`/track?id=${s.id}`)}
-                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md text-[11px] font-semibold transition flex items-center gap-1"
+                    className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-2.5 py-1 rounded-md text-[11px] font-semibold transition flex items-center gap-1 cursor-pointer"
                   >
-                    <span className="font-mono text-[#0b2240]">{s.id}</span>
+                    <span className="font-mono text-[#0b2240] font-bold">{s.id}</span>
                     <span className="text-slate-400">({s.label})</span>
                   </button>
                 ))}
@@ -233,134 +256,152 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Hero Right Visual */}
+          {/* Hero Right Visual with Real Air Cargo Image Showcase */}
           <div className="lg:col-span-5 flex justify-center">
-            <div className="relative w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-6 text-slate-900">
-              {/* Logo Presentation Card */}
-              <div className="text-center p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <div className="w-24 h-24 mx-auto relative mb-2">
+            <div className="relative w-full max-w-md bg-white rounded-3xl p-3 shadow-2xl border-4 border-white/20 overflow-hidden text-slate-900 space-y-3">
+              
+              {/* Aircraft Photo Card */}
+              <div className="relative h-60 w-full rounded-2xl overflow-hidden shadow-inner">
+                <Image
+                  src="/images/air-cargo.jpg"
+                  alt="Air Cargo Freight Aircraft"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+                
+                {/* Logo Badge in top left of image */}
+                <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs p-1.5 rounded-xl shadow-lg flex items-center gap-2">
                   <Image
                     src="/images/ved-logo.png"
-                    alt="VED Courier Logistics"
-                    fill
+                    alt="VED Courier"
+                    width={28}
+                    height={28}
                     className="object-contain"
                   />
-                </div>
-                <h3 className="text-xl font-black text-[#0b2240] tracking-tight">
-                  VED COURIER LOGISTICS
-                </h3>
-                <p className="text-xs font-extrabold tracking-widest text-[#e22026] mt-0.5">
-                  FAST • SAFE • GLOBAL
-                </p>
-                <p className="text-xs text-slate-500 mt-2">
-                  Licensed International Carrier & Freight Forwarding System
-                </p>
-              </div>
-
-              {/* Status Simulation Indicator */}
-              <div className="space-y-3 bg-[#0b2240] text-white p-4 rounded-xl">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-300">Active Trade Corridors</span>
-                  <span className="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">
-                    SYSTEM OPERATIONAL
+                  <span className="text-[11px] font-black tracking-tight text-[#0b2240] pr-1">
+                    VED COURIER
                   </span>
                 </div>
-                <div className="text-xs space-y-2">
-                  <div className="flex justify-between items-center text-slate-300 border-b border-slate-700/60 pb-1">
-                    <span>USA ↔ China Linehaul</span>
-                    <span className="text-emerald-400 font-mono">ON SCHEDULE</span>
-                  </div>
-                  <div className="flex justify-between items-center text-slate-300 border-b border-slate-700/60 pb-1">
-                    <span>China ↔ Nigeria Air Cargo</span>
-                    <span className="text-emerald-400 font-mono">ON SCHEDULE</span>
-                  </div>
-                  <div className="flex justify-between items-center text-slate-300">
-                    <span>Korea ↔ USA Express</span>
-                    <span className="text-emerald-400 font-mono">ON SCHEDULE</span>
-                  </div>
+
+                {/* Floating Flight Radar Indicator */}
+                <div className="absolute top-3 right-3 bg-emerald-500/90 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                  FLIGHT VED-941 LIVE
+                </div>
+
+                <div className="absolute bottom-3 left-3 right-3 text-white">
+                  <span className="text-[10px] uppercase font-bold text-red-300 block">Active Linehaul</span>
+                  <p className="font-black text-base leading-tight">Trans-Pacific Priority Air Charter</p>
+                  <p className="text-[11px] text-slate-300 mt-0.5">JFK New York → PVG Shanghai Gateway</p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-slate-500 pt-2">
-                <span className="flex items-center gap-1 font-medium">
-                  <Clock className="w-3.5 h-3.5 text-[#e22026]" /> 24/7 Global Tracking Active
-                </span>
-                <Link href="/services" className="text-[#0b2240] font-bold hover:underline flex items-center gap-0.5">
-                  Explore Services <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
+              {/* Status Details Bar */}
+              <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-[#0b2240] flex items-center gap-1.5">
+                    <Plane className="w-3.5 h-3.5 text-[#e22026]" /> Scheduled Cargo Feeder
+                  </span>
+                  <span className="font-mono text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
+                    ON SCHEDULE
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-600 flex justify-between">
+                  <span>Gross Capacity: <strong>110 Tons</strong></span>
+                  <span>Customs: <strong>Pre-Cleared</strong></span>
+                </div>
               </div>
+
+              {/* Courier Delivery Fleet Mini Feature */}
+              <div className="flex items-center gap-3 p-2 bg-white rounded-xl border border-slate-100">
+                <div className="w-12 h-12 rounded-xl overflow-hidden relative shrink-0">
+                  <Image
+                    src="/images/courier-delivery.jpg"
+                    alt="Courier Doorstep Delivery"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="text-xs">
+                  <span className="font-bold text-[#0b2240] block">Door-to-Door Courier Delivery</span>
+                  <span className="text-slate-500 text-[11px]">Direct handoff to consignee with signature verification</span>
+                </div>
+              </div>
+
             </div>
           </div>
 
         </div>
       </section>
 
-      {/* Primary International Shipping Routes */}
-      <section className="py-20 bg-white">
+      {/* Fleet & Logistics Imagery Showcase Strip */}
+      <section className="bg-slate-900 py-10 border-y-4 border-[#e22026]">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-            <span className="text-xs font-black tracking-widest text-[#e22026] uppercase">
-              INTERCONTINENTAL CONNECTIVITY
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-[#0b2240] tracking-tight">
-              Featured Global Trade Routes
-            </h2>
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              We operate dedicated line-hauls, chartered air cargo space, and maritime container slots connecting major economic gateways with guaranteed scheduled departures.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {internationalRoutes.map((route, i) => (
-              <div 
-                key={i}
-                className="bg-slate-50 rounded-2xl p-6 border border-slate-200 hover:border-[#0b2240]/40 hover:shadow-lg transition group relative flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[11px] font-extrabold uppercase bg-red-100 text-[#e22026] px-2.5 py-1 rounded-md">
-                      {route.badge}
-                    </span>
-                    <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-[#0b2240]" /> {route.freq}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-3 my-4">
-                    <div className="font-bold text-lg text-[#0b2240]">
-                      {route.origin}
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-[#e22026] group-hover:translate-x-1 transition shrink-0" />
-                    <div className="font-bold text-lg text-[#0b2240]">
-                      {route.dest}
-                    </div>
-                  </div>
-
-                  <p className="text-xs font-semibold text-slate-700 mb-1">
-                    {route.mode}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {route.highlight}
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-400 font-medium">Secured Customs Bonded</span>
-                  <Link 
-                    href="/contact" 
-                    className="text-xs font-bold text-[#0b2240] hover:text-[#e22026] flex items-center gap-1 transition"
-                  >
-                    Request Route Rate <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+            
+            <div className="relative h-44 rounded-2xl overflow-hidden group shadow-lg">
+              <Image
+                src="/images/ocean-ship.jpg"
+                alt="Ocean Container Vessel"
+                fill
+                className="object-cover group-hover:scale-105 transition duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3 text-white">
+                <span className="text-[10px] font-extrabold text-red-400 uppercase tracking-wider block">Maritime Fleet</span>
+                <p className="font-black text-sm">Container Shipping (FCL/LCL)</p>
               </div>
-            ))}
+            </div>
+
+            <div className="relative h-44 rounded-2xl overflow-hidden group shadow-lg">
+              <Image
+                src="/images/warehouse.jpg"
+                alt="Automated Logistics Warehouse"
+                fill
+                className="object-cover group-hover:scale-105 transition duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3 text-white">
+                <span className="text-[10px] font-extrabold text-red-400 uppercase tracking-wider block">Storage & Hubs</span>
+                <p className="font-black text-sm">Bonded Fulfillment Depots</p>
+              </div>
+            </div>
+
+            <div className="relative h-44 rounded-2xl overflow-hidden group shadow-lg">
+              <Image
+                src="/images/courier-delivery.jpg"
+                alt="Express Courier Delivery Driver"
+                fill
+                className="object-cover group-hover:scale-105 transition duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3 text-white">
+                <span className="text-[10px] font-extrabold text-red-400 uppercase tracking-wider block">Final Mile</span>
+                <p className="font-black text-sm">Express Door-to-Door</p>
+              </div>
+            </div>
+
+            <div className="relative h-44 rounded-2xl overflow-hidden group shadow-lg">
+              <Image
+                src="/images/customs-port.jpg"
+                alt="Customs Inspection Port Terminal"
+                fill
+                className="object-cover group-hover:scale-105 transition duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3 text-white">
+                <span className="text-[10px] font-extrabold text-red-400 uppercase tracking-wider block">Clearance</span>
+                <p className="font-black text-sm">Port & Customs Brokerage</p>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section className="py-20 bg-slate-50 border-y border-slate-200">
+      {/* Services Grid with Visual Photography */}
+      <section className="py-20 bg-slate-50 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
             <span className="text-xs font-black tracking-widest text-[#e22026] uppercase">
@@ -380,30 +421,42 @@ export default function HomePage() {
               return (
                 <div
                   key={i}
-                  className="bg-white rounded-2xl p-7 shadow-xs border border-slate-200 hover:shadow-xl hover:-translate-y-1 transition duration-200 flex flex-col justify-between"
+                  className="bg-white rounded-2xl overflow-hidden shadow-xs border border-slate-200 hover:shadow-xl hover:-translate-y-1 transition duration-200 flex flex-col justify-between group"
                 >
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#0b2240] text-white flex items-center justify-center shadow-md">
-                      <Icon className="w-6 h-6 text-[#e22026]" />
+                  {/* Service Photo Header */}
+                  <div className="relative h-48 w-full overflow-hidden">
+                    <Image
+                      src={svc.image}
+                      alt={svc.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
+                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-xs text-[#0b2240] p-2 rounded-xl shadow-md">
+                      <Icon className="w-5 h-5 text-[#e22026]" />
                     </div>
-                    <h3 className="text-xl font-bold text-[#0b2240]">
-                      {svc.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 leading-relaxed">
-                      {svc.desc}
-                    </p>
+                    <div className="absolute bottom-3 left-4 right-4 text-white">
+                      <span className="text-[10px] font-bold text-red-300 uppercase tracking-wider">{svc.stat}</span>
+                      <h3 className="text-lg font-black leading-tight">{svc.title}</h3>
+                    </div>
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="font-bold text-[#0b2240] bg-slate-100 px-2 py-1 rounded">
-                      {svc.stat}
-                    </span>
-                    <Link
-                      href={svc.link}
-                      className="font-bold text-[#e22026] hover:text-[#b81419] flex items-center gap-1 transition"
-                    >
-                      Details <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                  <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                      {svc.desc}
+                    </p>
+
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                      <span className="font-bold text-[#0b2240] bg-slate-100 px-2.5 py-1 rounded-md">
+                        Global Coverage
+                      </span>
+                      <Link
+                        href={svc.link}
+                        className="font-bold text-[#e22026] hover:text-[#b81419] flex items-center gap-1 transition"
+                      >
+                        Explore <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );
@@ -412,8 +465,79 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How Our Shipping Process Works */}
+      {/* Primary International Shipping Routes with Corridor Visuals */}
       <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+            <span className="text-xs font-black tracking-widest text-[#e22026] uppercase">
+              INTERCONTINENTAL CONNECTIVITY
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black text-[#0b2240] tracking-tight">
+              Featured Global Trade Routes
+            </h2>
+            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+              We operate dedicated line-hauls, chartered air cargo space, and maritime container slots connecting major economic gateways with guaranteed scheduled departures.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {internationalRoutes.map((route, i) => (
+              <div 
+                key={i}
+                className="bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 hover:border-[#0b2240]/40 hover:shadow-lg transition group flex flex-col justify-between"
+              >
+                {/* Mini Image Banner for Route */}
+                <div className="relative h-28 w-full overflow-hidden">
+                  <Image
+                    src={route.img}
+                    alt={route.origin + ' to ' + route.dest}
+                    fill
+                    className="object-cover group-hover:scale-105 transition duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
+                  <div className="absolute top-2.5 left-3">
+                    <span className="text-[10px] font-extrabold uppercase bg-red-600 text-white px-2 py-0.5 rounded shadow-xs">
+                      {route.badge}
+                    </span>
+                  </div>
+                  <div className="absolute bottom-2 left-3 right-3 text-white flex items-center justify-between text-xs font-bold">
+                    <span>{route.origin}</span>
+                    <ArrowRight className="w-4 h-4 text-[#e22026]" />
+                    <span>{route.dest}</span>
+                  </div>
+                </div>
+
+                <div className="p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                      <span className="font-semibold text-slate-700">{route.mode}</span>
+                      <span className="flex items-center gap-1 font-mono text-[11px]">
+                        <Clock className="w-3 h-3 text-[#0b2240]" /> {route.freq}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500">
+                      {route.highlight}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                    <span className="text-[11px] text-slate-400 font-medium">Bonded Customs</span>
+                    <Link 
+                      href="/contact" 
+                      className="font-bold text-[#0b2240] hover:text-[#e22026] flex items-center gap-1 transition"
+                    >
+                      Rate Quote <ChevronRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How Our Shipping Process Works */}
+      <section className="py-20 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
             <span className="text-xs font-black tracking-widest text-[#e22026] uppercase">
@@ -429,7 +553,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
             
-            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 relative text-center space-y-3">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs relative text-center space-y-3">
               <div className="w-12 h-12 mx-auto rounded-full bg-[#0b2240] text-white font-black text-lg flex items-center justify-center border-4 border-slate-100 shadow-md">
                 1
               </div>
@@ -439,7 +563,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 relative text-center space-y-3">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs relative text-center space-y-3">
               <div className="w-12 h-12 mx-auto rounded-full bg-[#0b2240] text-white font-black text-lg flex items-center justify-center border-4 border-slate-100 shadow-md">
                 2
               </div>
@@ -449,7 +573,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 relative text-center space-y-3">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs relative text-center space-y-3">
               <div className="w-12 h-12 mx-auto rounded-full bg-[#0b2240] text-white font-black text-lg flex items-center justify-center border-4 border-slate-100 shadow-md">
                 3
               </div>
@@ -459,7 +583,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 relative text-center space-y-3">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs relative text-center space-y-3">
               <div className="w-12 h-12 mx-auto rounded-full bg-[#e22026] text-white font-black text-lg flex items-center justify-center border-4 border-red-100 shadow-md">
                 4
               </div>
@@ -625,24 +749,24 @@ export default function HomePage() {
       </section>
 
       {/* Final Action Banner */}
-      <section className="bg-gradient-to-r from-[#0b2240] to-[#123058] py-14 px-4 sm:px-8 text-white border-t border-slate-700">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <section className="relative bg-gradient-to-r from-[#0b2240] to-[#123058] py-16 px-4 sm:px-8 text-white border-t border-slate-700 overflow-hidden">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
           <div>
-            <h3 className="text-2xl font-black">Ready to Book or Track Your Freight?</h3>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1">
+            <h3 className="text-2xl sm:text-3xl font-black">Ready to Book or Track Your Freight?</h3>
+            <p className="text-xs sm:text-sm text-slate-300 mt-1.5">
               Speak with a dedicated logistics specialist or input your tracking ID for instant milestone visibility.
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <Link
               href="/track"
-              className="bg-[#e22026] hover:bg-[#b81419] text-white font-bold px-6 py-3 rounded-xl text-xs sm:text-sm shadow-md transition"
+              className="bg-[#e22026] hover:bg-[#b81419] text-white font-bold px-6 py-3.5 rounded-xl text-xs sm:text-sm shadow-md transition"
             >
-              Track Now
+              Track Consignment
             </Link>
             <Link
               href="/contact"
-              className="bg-white text-[#0b2240] hover:bg-slate-100 font-bold px-6 py-3 rounded-xl text-xs sm:text-sm shadow-md transition"
+              className="bg-white text-[#0b2240] hover:bg-slate-100 font-bold px-6 py-3.5 rounded-xl text-xs sm:text-sm shadow-md transition"
             >
               Contact Support
             </Link>
