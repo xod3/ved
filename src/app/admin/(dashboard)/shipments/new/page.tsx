@@ -785,7 +785,7 @@ export default function CreateShipmentPage() {
                     <option value="USD">USD ($)</option>
                     <option value="EUR">EUR (€)</option>
                     <option value="CNY">CNY (¥)</option>
-                    <option value="NGN">NGN (₦)</option>
+                    <option value="GBP">GBP (£)</option>
                     <option value="KRW">KRW (₩)</option>
                   </select>
                 </div>

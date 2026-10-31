@@ -60,7 +60,7 @@ export default function HomePage() {
 
   // State: Rate Calculator
   const [calcOrigin, setCalcOrigin] = useState('United States (JFK)');
-  const [calcDest, setCalcDest] = useState('Nigeria (Lagos LOS)');
+  const [calcDest, setCalcDest] = useState('United Kingdom (London LHR)');
   const [calcWeight, setCalcWeight] = useState(10);
   const [calcMode, setCalcMode] = useState<'express' | 'air' | 'ocean'>('express');
 
@@ -84,7 +84,7 @@ export default function HomePage() {
       title: 'Seamless Global Delivery, Fast & Reliable',
       highlight: 'From Your Doorstep to Anywhere in the World',
       image: '/images/air-cargo.jpg',
-      statBadge: 'Direct Cargo Flights: USA • China • Nigeria • Korea',
+      statBadge: 'Direct Cargo Flights: USA • China • UK • Korea',
     },
     {
       id: 1,
@@ -108,7 +108,7 @@ export default function HomePage() {
       title: 'Smart Warehousing & Customs Pre-Clearance',
       highlight: '24/7 Monitored Storage Beside Major Gateways',
       image: '/images/warehouse.jpg',
-      statBadge: 'Licensed Customs Brokerage in USA, China & Nigeria',
+      statBadge: 'Licensed Customs Brokerage in USA, China & UK',
     },
   ];
 
@@ -130,8 +130,8 @@ export default function HomePage() {
 
   const sampleWaybills = [
     { label: 'US → China', id: 'VED-2026-000101' },
-    { label: 'China → Nigeria', id: 'VED-2026-000102' },
-    { label: 'US → Nigeria', id: 'VED-2026-000103' },
+    { label: 'China → UK', id: 'VED-2026-000102' },
+    { label: 'US → UK', id: 'VED-2026-000103' },
     { label: 'Korea → US', id: 'VED-2026-000104' },
   ];
 
@@ -162,7 +162,7 @@ export default function HomePage() {
     },
     {
       title: 'Overseas Shipping (Import & Export)',
-      desc: 'Cross-border express and freight forwarding connecting Nigeria, the United States, China, the UK, and South Korea.',
+      desc: 'Cross-border express and freight forwarding connecting the United Kingdom, the United States, China, Europe, and South Korea.',
       badge: '230+ Destinations',
       icon: Plane,
       image: '/images/air-cargo.jpg',
@@ -260,20 +260,20 @@ export default function HomePage() {
   const tradeCorridors = [
     {
       origin: 'United States',
-      dest: 'Nigeria',
+      dest: 'United Kingdom',
       mode: 'Air Cargo Express',
       freq: 'Daily Flights',
-      route: 'JFK/ORD → Lagos (LOS) & Abuja',
+      route: 'JFK/ORD → London (LHR) & Manchester',
       badge: 'Popular Route',
       image: '/images/courier-delivery.jpg',
       time: '2–4 Days Express',
     },
     {
       origin: 'China',
-      dest: 'Nigeria',
+      dest: 'United Kingdom',
       mode: 'Air Cargo & Ocean',
       freq: '3x Weekly Flights',
-      route: 'Guangzhou/Shenzhen → Lagos (LOS)',
+      route: 'Guangzhou/Shenzhen → London (LHR)',
       badge: 'Direct Express',
       image: '/images/customs-port.jpg',
       time: '3–5 Days Air • 20 Days Ocean',
@@ -312,7 +312,7 @@ export default function HomePage() {
     },
     {
       q: 'What international shipping corridors does VED Courier cover?',
-      a: 'We operate scheduled air and ocean freight connecting Nigeria, the United States, China, South Korea, the UK, and 230+ destinations globally with bonded customs clearance at all major ports.',
+      a: 'We operate scheduled air and ocean freight connecting the United Kingdom, the United States, China, South Korea, Europe, and 230+ destinations globally with bonded customs clearance at all major ports.',
     },
     {
       q: 'How does VED Courier protect customer privacy on public tracking?',
@@ -339,7 +339,7 @@ export default function HomePage() {
               {/* Badge */}
               <div className="inline-flex items-center gap-2 bg-purple-100/80 border border-purple-200 px-4 py-1.5 rounded-full text-xs font-bold text-purple-900 shadow-xs">
                 <span className="w-2 h-2 rounded-full bg-purple-700 animate-pulse" />
-                AFRICA &amp; GLOBAL LOGISTICS LEADER
+                GLOBAL LOGISTICS &amp; FREIGHT FORWARDING
               </div>
 
               {/* Main Headline */}
@@ -349,7 +349,7 @@ export default function HomePage() {
                   <span className="text-purple-700">Locally &amp; Globally.</span>
                 </h1>
                 <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
-                  Empowering commerce and connecting businesses and individuals with fast, reliable cross-border shipping across the USA, Nigeria, China, South Korea, and 230+ global destinations.
+                  Empowering commerce and connecting businesses and individuals with fast, reliable cross-border shipping across the USA, the UK, China, South Korea, and 230+ global destinations.
                 </p>
               </div>
 
@@ -451,7 +451,7 @@ export default function HomePage() {
                         >
                           <option value="United States (JFK)">New York (USA)</option>
                           <option value="China (Guangzhou CAN)">Guangzhou (China)</option>
-                          <option value="Nigeria (Lagos LOS)">Lagos (Nigeria)</option>
+                          <option value="United Kingdom (London LHR)">London (United Kingdom)</option>
                           <option value="South Korea (Seoul ICN)">Seoul (Korea)</option>
                         </select>
                       </div>
@@ -463,7 +463,7 @@ export default function HomePage() {
                           onChange={(e) => setCalcDest(e.target.value)}
                           className="w-full px-3 py-2 bg-slate-50 border border-purple-200 rounded-lg text-xs font-semibold text-slate-900"
                         >
-                          <option value="Nigeria (Lagos LOS)">Lagos (Nigeria)</option>
+                          <option value="United Kingdom (London LHR)">London (United Kingdom)</option>
                           <option value="United States (JFK)">New York (USA)</option>
                           <option value="China (Shanghai PVG)">Shanghai (China)</option>
                           <option value="South Korea (Seoul ICN)">Seoul (Korea)</option>
@@ -1048,12 +1048,12 @@ export default function HomePage() {
                 ))}
               </div>
               <p className="text-xs text-slate-600 italic leading-relaxed">
-                “Our telecommunications hardware shipped from Guangzhou to Lagos arrived 2 days ahead of schedule. The door-to-door delivery and WhatsApp tracking notifications were exceptional.”
+                “Our telecommunications hardware shipped from Guangzhou to London Heathrow arrived 2 days ahead of schedule. The door-to-door delivery and automated tracking notifications were exceptional.”
               </p>
               <div className="pt-3 border-t border-purple-50">
-                <p className="font-extrabold text-sm text-[#2e0854]">Alhaji Bello Danladi</p>
-                <p className="text-[11px] text-purple-700 font-semibold">CEO, Danladi Ventures (Lagos)</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">Route: China → Nigeria Express</p>
+                <p className="font-extrabold text-sm text-[#2e0854]">Arthur Pemberton</p>
+                <p className="text-[11px] text-purple-700 font-semibold">Managing Director, Meridian Tech Ltd (London)</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Route: China → United Kingdom Express</p>
               </div>
             </div>
 
@@ -1080,12 +1080,12 @@ export default function HomePage() {
                 ))}
               </div>
               <p className="text-xs text-slate-600 italic leading-relaxed">
-                “As an e-commerce business owner shipping from the USA to customers in Nigeria and Ghana, VED Courier has eliminated all customs hassles. Their digital tracking gives my buyers peace of mind.”
+                “As an e-commerce business owner shipping from the USA to customers across the United Kingdom and Europe, VED Courier has eliminated all customs hassles. Their digital tracking gives my buyers peace of mind.”
               </p>
               <div className="pt-3 border-t border-purple-50">
-                <p className="font-extrabold text-sm text-[#2e0854]">Amina Olanrewaju</p>
-                <p className="text-[11px] text-purple-700 font-semibold">Founder, Glamour Imports</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">Route: USA → Nigeria Doorstep</p>
+                <p className="font-extrabold text-sm text-[#2e0854]">Eleanor Davies</p>
+                <p className="text-[11px] text-purple-700 font-semibold">Founder, Davies &amp; Co. Retail</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Route: USA → United Kingdom Doorstep</p>
               </div>
             </div>
           </div>

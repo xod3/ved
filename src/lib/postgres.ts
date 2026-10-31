@@ -239,21 +239,21 @@ async function seedPostgresShipments(sql: any) {
         sender_city: 'Guangzhou',
         sender_country: 'China',
         sender_street: 'No. 88 Baiyun Industrial Zone',
-        receiver_name: 'Lagos Tech Hub & Devices Hub',
-        receiver_city: 'Lagos',
-        receiver_country: 'Nigeria',
-        receiver_street: '14 Otigba Street, Computer Village, Ikeja',
+        receiver_name: 'London Tech Hub & Devices Ltd',
+        receiver_city: 'London',
+        receiver_country: 'United Kingdom',
+        receiver_street: '14 High Holborn, Camden',
         origin_city: 'Guangzhou',
         origin_country: 'China',
         origin_facility: 'Guangzhou Baiyun Freight Terminal',
-        destination_city: 'Lagos',
-        destination_country: 'Nigeria',
-        destination_facility: 'Murtala Muhammed International Cargo Area',
-        shipping_route: 'China → Nigeria',
+        destination_city: 'London',
+        destination_country: 'United Kingdom',
+        destination_facility: 'Heathrow World Cargo Centre (LHR)',
+        shipping_route: 'China → United Kingdom',
         transport_mode: 'Air Freight',
         service_type: 'Express Courier',
         current_status: 'In Transit',
-        current_recorded_location: 'In Transit to Lagos LOS',
+        current_recorded_location: 'In Transit to London LHR',
         total_actual_weight: 120.0,
       },
       {
@@ -263,21 +263,21 @@ async function seedPostgresShipments(sql: any) {
         sender_city: 'Houston',
         sender_country: 'United States',
         sender_street: '1200 Post Oak Blvd',
-        receiver_name: 'Abuja Specialist Clinic & Diagnostics',
-        receiver_city: 'Abuja',
-        receiver_country: 'Nigeria',
-        receiver_street: 'Plot 402 Garki II District',
+        receiver_name: 'Manchester Specialist Clinic & Diagnostics',
+        receiver_city: 'Manchester',
+        receiver_country: 'United Kingdom',
+        receiver_street: 'Unit 4, Oxford Road Health Park',
         origin_city: 'Houston',
         origin_country: 'United States',
         origin_facility: 'George Bush Intercontinental Cargo Facility',
-        destination_city: 'Abuja',
-        destination_country: 'Nigeria',
-        destination_facility: 'Nnamdi Azikiwe Airport Cargo Warehouse',
-        shipping_route: 'United States → Nigeria',
+        destination_city: 'Manchester',
+        destination_country: 'United Kingdom',
+        destination_facility: 'Manchester Airport World Freight Terminal (MAN)',
+        shipping_route: 'United States → United Kingdom',
         transport_mode: 'Air Freight',
         service_type: 'Priority Medical Express',
         current_status: 'Out for Delivery',
-        current_recorded_location: 'Abuja Dispatch Facility',
+        current_recorded_location: 'Manchester Dispatch Depot',
         total_actual_weight: 18.5,
       },
       {
@@ -311,17 +311,17 @@ async function seedPostgresShipments(sql: any) {
         sender_city: 'Atlanta',
         sender_country: 'United States',
         sender_street: '3400 Peachtree Road NE',
-        receiver_name: 'Kano Commercial Trading Emporium',
-        receiver_city: 'Kano',
-        receiver_country: 'Nigeria',
-        receiver_street: 'Commercial Road, Bompai Industrial Area',
+        receiver_name: 'Birmingham Commercial Trading Emporium',
+        receiver_city: 'Birmingham',
+        receiver_country: 'United Kingdom',
+        receiver_street: 'Unit 12, Heartlands Industrial Estate',
         origin_city: 'Atlanta',
         origin_country: 'United States',
         origin_facility: 'Hartsfield-Jackson Atlanta Air Logistics Depot',
-        destination_city: 'Kano',
-        destination_country: 'Nigeria',
-        destination_facility: 'Mallam Aminu Kano International Freight Hub',
-        shipping_route: 'United States → Nigeria',
+        destination_city: 'Birmingham',
+        destination_country: 'United Kingdom',
+        destination_facility: 'Birmingham Airport Cargo Terminal (BHX)',
+        shipping_route: 'United States → United Kingdom',
         transport_mode: 'Air Freight',
         service_type: 'Express Courier',
         current_status: 'Shipment Created',
@@ -335,17 +335,17 @@ async function seedPostgresShipments(sql: any) {
         sender_city: 'Dallas',
         sender_country: 'United States',
         sender_street: '2100 Ross Avenue, Suite 1800',
-        receiver_name: 'Victoria Island Corporate Logistics',
-        receiver_city: 'Lagos',
-        receiver_country: 'Nigeria',
-        receiver_street: 'Ahmadu Bello Way, Victoria Island',
+        receiver_name: 'Canary Wharf Corporate Logistics',
+        receiver_city: 'London',
+        receiver_country: 'United Kingdom',
+        receiver_street: '25 Bank Street, Canary Wharf',
         origin_city: 'Dallas',
         origin_country: 'United States',
         origin_facility: 'DFW International Air Freight Hub',
-        destination_city: 'Lagos',
-        destination_country: 'Nigeria',
-        destination_facility: 'Murtala Muhammed Cargo Complex',
-        shipping_route: 'United States → Nigeria',
+        destination_city: 'London',
+        destination_country: 'United Kingdom',
+        destination_facility: 'Heathrow International Cargo Complex',
+        shipping_route: 'United States → United Kingdom',
         transport_mode: 'Air Freight',
         service_type: 'Express Courier',
         current_status: 'In Transit',
@@ -511,4 +511,51 @@ export async function getPostgresShipments() {
     SELECT * FROM shipments ORDER BY created_at DESC LIMIT 100;
   `;
   return shipments || [];
+}
+
+export async function addPostgresTrackingEvent(data: {
+  shipment_id: string;
+  status: string;
+  event_title: string;
+  event_description?: string;
+  internal_note?: string;
+  location_name: string;
+  city?: string;
+  region?: string;
+  country: string;
+  facility_name?: string;
+  event_timestamp?: string;
+  is_public?: boolean;
+  created_by?: string;
+}) {
+  const sql = getSql();
+  if (!sql) return null;
+  await initPostgresDb();
+
+  const eventId = `evt-${Date.now()}`;
+  const isPub = data.is_public !== false ? 1 : 0;
+  const recordedLocation = [data.location_name || data.city, data.country].filter(Boolean).join(', ');
+
+  await sql`
+    INSERT INTO tracking_events (
+      id, shipment_id, status, event_title, event_description, internal_note,
+      location_name, city, country, facility_name, is_public, created_by
+    ) VALUES (
+      ${eventId}, ${data.shipment_id}, ${data.status}, ${data.event_title},
+      ${data.event_description || null}, ${data.internal_note || null},
+      ${data.location_name}, ${data.city || null}, ${data.country},
+      ${data.facility_name || null}, ${isPub}, ${data.created_by || 'admin@vedcourier.com'}
+    )
+    ON CONFLICT (id) DO NOTHING;
+  `;
+
+  await sql`
+    UPDATE shipments
+    SET current_status = ${data.status},
+        current_recorded_location = ${recordedLocation},
+        last_updated_at = NOW()
+    WHERE id = ${data.shipment_id} OR tracking_number = ${data.shipment_id};
+  `;
+
+  return eventId;
 }

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getShipmentById } from '@/lib/db';
+import { isPostgresConfigured, getPostgresShipmentById } from '@/lib/postgres';
 import { ArrowLeft } from 'lucide-react';
 import PrintButton from '@/components/PrintButton';
 
@@ -12,7 +13,19 @@ interface Props {
 
 export default async function PrintReceiptPage({ params }: Props) {
   const { id } = await params;
-  const shipment = getShipmentById(id);
+  let shipment: any = null;
+
+  if (isPostgresConfigured()) {
+    try {
+      shipment = await getPostgresShipmentById(id);
+    } catch (pgErr) {
+      console.warn('Postgres lookup error on receipt page:', pgErr);
+    }
+  }
+
+  if (!shipment) {
+    shipment = getShipmentById(id);
+  }
 
   if (!shipment) {
     notFound();

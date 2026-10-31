@@ -199,7 +199,7 @@ export default function CompanySettingsPage() {
                 <option value="USD">USD ($ - US Dollar)</option>
                 <option value="EUR">EUR (€ - Euro)</option>
                 <option value="CNY">CNY (¥ - Chinese Yuan)</option>
-                <option value="NGN">NGN (₦ - Nigerian Naira)</option>
+                <option value="GBP">GBP (£ - British Pound)</option>
                 <option value="KRW">KRW (₩ - South Korean Won)</option>
               </select>
             </div>

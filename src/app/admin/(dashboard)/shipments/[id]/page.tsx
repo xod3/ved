@@ -29,13 +29,23 @@ export default async function ShipmentDetailPage({ params, searchParams }: Props
   const { id } = await params;
   const { created, tracking } = await searchParams;
 
-  let shipment = getShipmentById(id);
+  let shipment: any = null;
 
-  if (!shipment && isPostgresConfigured()) {
+  if (isPostgresConfigured()) {
     try {
       shipment = await getPostgresShipmentById(id);
-    } catch {
-      // fallback
+      if (!shipment && tracking) {
+        shipment = await getPostgresShipmentById(tracking);
+      }
+    } catch (pgErr) {
+      console.warn('Postgres lookup error in detail page:', pgErr);
+    }
+  }
+
+  if (!shipment) {
+    shipment = getShipmentById(id);
+    if (!shipment && tracking) {
+      shipment = getShipmentById(tracking);
     }
   }
 

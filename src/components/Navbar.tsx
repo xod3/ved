@@ -50,7 +50,7 @@ export default function Navbar() {
             </span>
             <span className="hidden md:flex items-center gap-1.5 text-purple-300">
               <Clock className="w-3.5 h-3.5 text-purple-300" />
-              24/7 Operations Across Nigeria, USA, China &amp; Korea
+              24/7 Operations Across UK, USA, China &amp; Korea
             </span>
             <span className="hidden lg:flex items-center gap-1.5 text-purple-300">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />

@@ -141,8 +141,8 @@ export default function ShipmentsManagementPage() {
             >
               <option value="all">All Trade Corridors</option>
               <option value="United States → China">United States → China</option>
-              <option value="China → Nigeria">China → Nigeria</option>
-              <option value="United States → Nigeria">United States → Nigeria</option>
+              <option value="China → United Kingdom">China → United Kingdom</option>
+              <option value="United States → United Kingdom">United States → United Kingdom</option>
               <option value="South Korea → United States">South Korea → United States</option>
             </select>
           </div>

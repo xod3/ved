@@ -33,7 +33,7 @@ export default function ServicesPage() {
       icon: Plane,
       badge: 'Global Speed',
       image: '/images/air-cargo.jpg',
-      desc: 'Priority, standard, and chartered air cargo transportation connecting Nigeria, the United States, China, the UK, and South Korea with dedicated allocations on scheduled freighters.',
+      desc: 'Priority, standard, and chartered air cargo transportation connecting the United Kingdom, the United States, China, Europe, and South Korea with dedicated allocations on scheduled freighters.',
       features: [
         'Airport-to-airport and airport-to-door options',
         'Consolidated (LAL) and full charter solutions',
@@ -84,7 +84,7 @@ export default function ServicesPage() {
       icon: FileText,
       badge: 'Pre-Cleared Airborne',
       image: '/images/customs-port.jpg',
-      desc: 'In-house licensed customs brokerage navigating complex trade regulations, tariff schedules, HS code classifications, and import compliance in Nigeria, the US, and China.',
+      desc: 'In-house licensed customs brokerage navigating complex trade regulations, tariff schedules, HS code classifications, and import compliance in the United Kingdom, the US, and China.',
       features: [
         'Pre-clearance documentation filing while cargo is airborne',
         'Harmonized System (HS) code classification auditing',
@@ -142,7 +142,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* ─── SERVICE LIST (GIGL PURPLE & WHITE CARDS) ─────────────────── */}
+      {/* ─── SERVICE LIST (PURPLE & WHITE CARDS) ─────────────────── */}
       <main className="max-w-6xl mx-auto px-4 sm:px-8 py-16">
         <div className="space-y-10">
           {serviceList.map((svc, index) => {

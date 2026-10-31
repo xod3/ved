@@ -92,8 +92,8 @@ function TrackContent() {
 
   const demoNumbers = [
     { id: 'VED-2026-000101', label: 'US → China (Customs Cleared)' },
-    { id: 'VED-2026-000102', label: 'China → Nigeria (In Transit)' },
-    { id: 'VED-2026-000103', label: 'US → Nigeria (Out for Delivery)' },
+    { id: 'VED-2026-000102', label: 'China → United Kingdom (In Transit)' },
+    { id: 'VED-2026-000103', label: 'US → United Kingdom (Out for Delivery)' },
     { id: 'VED-2026-000104', label: 'Korea → US (Delivered)' },
   ];
 
@@ -116,14 +116,14 @@ function TrackContent() {
         <div className="max-w-4xl mx-auto space-y-4 relative z-10">
           <div className="inline-flex items-center gap-2 bg-purple-900/80 border border-purple-400/30 px-3 py-1 rounded-full text-xs font-bold text-purple-200">
             <Search className="w-3.5 h-3.5 text-purple-300" />
-            <span>OFFICIAL GIGL-STYLE WAYBILL TRACKER</span>
+            <span>GLOBAL CARGO &amp; WAYBILL TRACKING</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
             Track &amp; Trace Your Waybill
           </h1>
           <p className="text-purple-200 text-sm max-w-2xl leading-relaxed">
-            Live, verified tracking data directly from VED Courier global air cargo terminals, maritime gateways, and customs hubs across Nigeria, the USA, China, and Korea.
+            Live, verified tracking data directly from VED Courier global air cargo terminals, maritime gateways, and customs hubs across the United Kingdom, the USA, China, and Korea.
           </p>
 
           {/* Search Box */}
@@ -270,7 +270,7 @@ function TrackContent() {
                 </span>
               </div>
 
-              {/* Progress Milestones Bar (GIGL Purple Stepper) */}
+              {/* Progress Milestones Bar (Purple Stepper) */}
               <div className="px-6 py-6 border-b border-purple-50">
                 <div className="relative">
                   <div className="absolute top-4 left-4 right-4 h-1 bg-purple-100 hidden sm:block" />

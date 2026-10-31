@@ -27,15 +27,15 @@ export default function AboutPage() {
       image: '/images/air-cargo.jpg',
     },
     {
-      title: 'West Africa Hub',
-      location: 'Lagos (LOS) & Abuja (ABV), Nigeria',
-      desc: 'Murtala Muhammed Cargo Complex operations with dedicated customs pre-clearance and nationwide last-mile delivery fleet.',
+      title: 'United Kingdom & Europe Gateway',
+      location: 'London (LHR) & Manchester (MAN), United Kingdom',
+      desc: 'Heathrow World Cargo Centre operations with dedicated customs pre-clearance and nationwide last-mile delivery fleet.',
       image: '/images/courier-delivery.jpg',
     },
     {
       title: 'East Asia Gateway',
       location: 'Shanghai (PVG) & Guangzhou (CAN), China',
-      desc: 'Pudong and Baiyun Freight Centers connecting major manufacturing corridors directly to Nigeria and the Americas.',
+      desc: 'Pudong and Baiyun Freight Centers connecting major manufacturing corridors directly to the United Kingdom and the Americas.',
       image: '/images/customs-port.jpg',
     },
     {
@@ -91,7 +91,7 @@ export default function AboutPage() {
               At VED COURIER LOGISTICS, our motto is not a marketing slogan—it is the operational doctrine governing every parcel, pallet, and container we receive. In an industry often clouded by opaque tracking, unexpected delays, and unaccountable intermediaries, we stand out by offering direct, persistent visibility from intake to final sign-off.
             </p>
             <p className="text-sm text-slate-600 leading-relaxed">
-              We specialize in complex, high-demand international trade corridors including the United States, Nigeria, China, South Korea, and European gateways. Whether shipping precision medical sensors from California to Abuja, industrial robotics from Seoul to Chicago, or commercial e-commerce goods from Guangzhou to Lagos, our team handles each consignment with rigorous care.
+              We specialize in complex, high-demand international trade corridors including the United States, the United Kingdom, China, South Korea, and European gateways. Whether shipping precision medical sensors from California to London, industrial robotics from Seoul to Chicago, or commercial e-commerce goods from Guangzhou to Manchester, our team handles each consignment with rigorous care.
             </p>
 
             <div className="grid grid-cols-2 gap-4 pt-2">

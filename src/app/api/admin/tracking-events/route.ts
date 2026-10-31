@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
 import { addTrackingEvent } from '@/lib/db';
+import { isPostgresConfigured, addPostgresTrackingEvent } from '@/lib/postgres';
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,6 +50,28 @@ export async function POST(request: NextRequest) {
       created_by: session.email,
       notify_customer: !!notify_customer,
     });
+
+    if (isPostgresConfigured()) {
+      try {
+        await addPostgresTrackingEvent({
+          shipment_id,
+          status,
+          event_title,
+          event_description,
+          internal_note,
+          location_name,
+          city,
+          region,
+          country,
+          facility_name,
+          event_timestamp,
+          is_public: is_public !== false,
+          created_by: session.email,
+        });
+      } catch (pgErr) {
+        console.warn('Postgres tracking event warning:', pgErr);
+      }
+    }
 
     return NextResponse.json({
       success: true,

@@ -45,7 +45,7 @@ export default function Footer() {
             </blockquote>
 
             <p className="text-sm text-purple-200/90 leading-relaxed max-w-sm">
-              Africa and global technology-driven courier, freight forwarding, and e-commerce logistics platform connecting the United States, Nigeria, China, South Korea, and 230+ international trade gateways.
+              Global technology-driven courier, freight forwarding, and e-commerce logistics platform connecting the United States, the United Kingdom, China, South Korea, and 230+ international trade gateways.
             </p>
 
             <div className="flex items-center gap-2 pt-1 flex-wrap">
@@ -90,8 +90,8 @@ export default function Footer() {
             <ul className="space-y-2.5 text-sm">
               {[
                 ['USA ↔ China', 'Daily Departures'],
-                ['China ↔ Nigeria', 'Priority Air & Ocean'],
-                ['USA ↔ Nigeria', 'Express Linehaul'],
+                ['China ↔ United Kingdom', 'Priority Air & Ocean'],
+                ['USA ↔ United Kingdom', 'Express Linehaul'],
                 ['South Korea ↔ USA', 'Direct Air Cargo'],
                 ['Europe & Global', 'Worldwide Network'],
               ].map(([route, freq]) => (

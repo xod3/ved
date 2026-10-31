@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import QRCode from 'qrcode';
 import { getShipmentById } from '@/lib/db';
+import { isPostgresConfigured, getPostgresShipmentById } from '@/lib/postgres';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import PrintButton from '@/components/PrintButton';
@@ -13,14 +14,26 @@ interface Props {
 
 export default async function PrintLabelPage({ params }: Props) {
   const { id } = await params;
-  const shipment = getShipmentById(id);
+  let shipment: any = null;
+
+  if (isPostgresConfigured()) {
+    try {
+      shipment = await getPostgresShipmentById(id);
+    } catch (pgErr) {
+      console.warn('Postgres lookup error on label page:', pgErr);
+    }
+  }
+
+  if (!shipment) {
+    shipment = getShipmentById(id);
+  }
 
   if (!shipment) {
     notFound();
   }
 
   // Generate scannable QR Code linking to live tracking
-  const trackingUrl = `https://redkoreaservices.com/track?id=${shipment.tracking_number}`;
+  const trackingUrl = `https://www.vedcourier.online/track?id=${shipment.tracking_number}`;
   const qrCodeDataUrl = await QRCode.toDataURL(trackingUrl, {
     width: 140,
     margin: 1,

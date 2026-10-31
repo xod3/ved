@@ -50,7 +50,7 @@ export default function PrivacyPolicyPage() {
           <section className="space-y-3">
             <h2 className="text-lg font-black text-[#2e0854]">4. Customs &amp; Law Enforcement Disclosures</h2>
             <p>
-              International customs laws require the presentation of authentic manifests to border authorities (such as US Customs and Border Protection, General Administration of Customs of China, and Nigeria Customs Service). We disclose required documentation solely to comply with applicable import/export regulations and security mandates.
+              International customs laws require the presentation of authentic manifests to border authorities (such as US Customs and Border Protection, General Administration of Customs of China, and HM Revenue & Customs / UK Border Force). We disclose required documentation solely to comply with applicable import/export regulations and security mandates.
             </p>
           </section>
 

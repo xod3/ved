@@ -94,7 +94,7 @@ export default function ContactPage() {
 
   const hubs = [
     { name: 'North America (JFK / LAX)', cities: 'New York & Los Angeles' },
-    { name: 'West Africa (LOS / ABV)', cities: 'Lagos & Abuja, Nigeria' },
+    { name: 'Europe & United Kingdom (LHR / MAN)', cities: 'London & Manchester, UK' },
     { name: 'East Asia (PVG / CAN)', cities: 'Shanghai & Guangzhou, China' },
     { name: 'Northeast Asia (ICN)', cities: 'Seoul Incheon, South Korea' },
   ];
