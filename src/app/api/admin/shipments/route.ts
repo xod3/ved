@@ -1,12 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
 import { getShipments, createShipment } from '@/lib/db';
+import { isPostgresConfigured, createPostgresShipment, getPostgresShipments } from '@/lib/postgres';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getAdminSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    }
+
+    if (isPostgresConfigured()) {
+      try {
+        const pgShipments = await getPostgresShipments();
+        if (pgShipments && pgShipments.length > 0) {
+          return NextResponse.json({ success: true, shipments: pgShipments });
+        }
+      } catch (pgErr) {
+        console.warn('Postgres GET shipments warning:', pgErr);
+      }
     }
 
     const { searchParams } = request.nextUrl;
@@ -62,15 +74,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const created = createShipment(
-      {
-        ...shipment,
-        created_by: session.email,
-        assigned_staff_name: session.full_name,
-        assigned_staff_id: session.id,
-      },
-      packages
-    );
+    const shipmentData = {
+      ...shipment,
+      created_by: session.email,
+      assigned_staff_name: session.full_name,
+      assigned_staff_id: session.id,
+    };
+
+    const created = createShipment(shipmentData, packages);
+
+    if (isPostgresConfigured()) {
+      try {
+        await createPostgresShipment(
+          { ...shipmentData, id: created.id, tracking_number: created.tracking_number },
+          packages
+        );
+      } catch (pgErr) {
+        console.warn('Postgres save warning:', pgErr);
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -83,3 +105,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create shipment. Please verify unique constraints.' }, { status: 500 });
   }
 }
+

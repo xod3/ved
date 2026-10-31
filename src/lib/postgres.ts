@@ -1,14 +1,23 @@
 import { neon } from '@neondatabase/serverless';
 
-const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL || '';
+function getConnectionString(): string {
+  return process.env.POSTGRES_URL || process.env.DATABASE_URL || '';
+}
 
-export const isPostgresConfigured = Boolean(connectionString);
+export function isPostgresConfigured(): boolean {
+  return Boolean(getConnectionString());
+}
 
-export const sql = isPostgresConfigured ? neon(connectionString) : null;
+export function getSql() {
+  const conn = getConnectionString();
+  if (!conn) return null;
+  return neon(conn);
+}
 
 let tablesInitialized = false;
 
 export async function initPostgresDb() {
+  const sql = getSql();
   if (!sql || tablesInitialized) return;
 
   try {
@@ -174,7 +183,7 @@ export async function initPostgresDb() {
       );
     `;
 
-    // 7. Seed default admin if missing
+    // Seed default admin if missing
     const profiles = await sql`SELECT count(*)::int as count FROM profiles;`;
     if (profiles[0].count === 0) {
       await sql`
@@ -184,8 +193,115 @@ export async function initPostgresDb() {
     }
 
     tablesInitialized = true;
-    console.log('Postgres/Neon tables initialized successfully.');
+    console.log('Postgres/Neon tables ready.');
   } catch (err) {
-    console.warn('Postgres table initialization notice:', err);
+    console.warn('Postgres table initialization note:', err);
   }
+}
+
+export async function createPostgresShipment(data: any, packages: any[]) {
+  const sql = getSql();
+  if (!sql) return null;
+  await initPostgresDb();
+
+  const shipmentId = data.id || `ship-${Date.now()}`;
+  const trackingNumber = data.tracking_number;
+
+  let totalActualWeight = 0;
+  let totalVolumetricWeight = 0;
+  for (const pkg of packages) {
+    totalActualWeight += Number(pkg.weight || 0) * Number(pkg.quantity || 1);
+    if (pkg.length && pkg.width && pkg.height) {
+      const vol = (Number(pkg.length) * Number(pkg.width) * Number(pkg.height)) / 5000;
+      totalVolumetricWeight += vol * Number(pkg.quantity || 1);
+    }
+  }
+
+  const chargeableWeight = Math.max(totalActualWeight, totalVolumetricWeight);
+  const totalCharge = (Number(data.shipping_fee || 0) + Number(data.handling_fee || 0) + Number(data.insurance_fee || 0) + Number(data.customs_charges || 0)) - Number(data.discount || 0);
+
+  await sql`
+    INSERT INTO shipments (
+      id, tracking_number, internal_reference,
+      sender_name, sender_company, sender_email, sender_phone, sender_country, sender_state, sender_city, sender_postal_code, sender_street, sender_pickup_address,
+      receiver_name, receiver_company, receiver_email, receiver_phone, receiver_country, receiver_state, receiver_city, receiver_postal_code, receiver_street, delivery_instructions,
+      origin_country, origin_city, origin_facility, destination_country, destination_city, destination_facility, transit_hubs, shipping_route, transport_mode, service_type, carrier_partner, flight_vessel_reference,
+      current_status, current_recorded_location,
+      total_actual_weight, weight_unit, total_volumetric_weight, chargeable_weight,
+      declared_value, currency, shipping_fee, handling_fee, insurance_fee, customs_charges, discount, total_charge, amount_paid, payment_status, payment_method,
+      customer_notes, internal_notes, assigned_staff_name, assigned_staff_id, created_by
+    ) VALUES (
+      ${shipmentId}, ${trackingNumber}, ${data.internal_reference || null},
+      ${data.sender_name}, ${data.sender_company || null}, ${data.sender_email || null}, ${data.sender_phone || null}, ${data.sender_country}, ${data.sender_state || null}, ${data.sender_city}, ${data.sender_postal_code || null}, ${data.sender_street}, ${data.sender_pickup_address || null},
+      ${data.receiver_name}, ${data.receiver_company || null}, ${data.receiver_email || null}, ${data.receiver_phone || null}, ${data.receiver_country}, ${data.receiver_state || null}, ${data.receiver_city}, ${data.receiver_postal_code || null}, ${data.receiver_street}, ${data.delivery_instructions || null},
+      ${data.origin_country}, ${data.origin_city}, ${data.origin_facility || `${data.origin_city} Logistics Hub`}, ${data.destination_country}, ${data.destination_city}, ${data.destination_facility || `${data.destination_city} Central Delivery Depot`}, ${data.transit_hubs || null}, ${data.shipping_route || `${data.origin_country} → ${data.destination_country}`}, ${data.transport_mode || 'Air Freight'}, ${data.service_type || 'Express Courier'}, ${data.carrier_partner || 'VED Courier Global Line'}, ${data.flight_vessel_reference || null},
+      'Shipment Created', ${`${data.origin_facility || data.origin_city}, ${data.origin_country}`},
+      ${totalActualWeight}, ${data.weight_unit || 'kg'}, ${Number(totalVolumetricWeight.toFixed(2))}, ${Number(chargeableWeight.toFixed(2))},
+      ${Number(data.declared_value || 0)}, ${data.currency || 'USD'}, ${Number(data.shipping_fee || 0)}, ${Number(data.handling_fee || 0)}, ${Number(data.insurance_fee || 0)}, ${Number(data.customs_charges || 0)}, ${Number(data.discount || 0)}, ${Number(totalCharge.toFixed(2))}, ${Number(data.amount_paid || 0)}, ${data.payment_status || 'Pending'}, ${data.payment_method || 'Bank Transfer'},
+      ${data.customer_notes || null}, ${data.internal_notes || null}, ${data.assigned_staff_name || 'Staff Dispatch'}, ${data.assigned_staff_id || 'admin-01'}, ${data.created_by || 'admin@vedcourier.com'}
+    )
+    ON CONFLICT (id) DO NOTHING;
+  `;
+
+  // Insert packages
+  let pIdx = 1;
+  for (const pkg of packages) {
+    const pkgId = `pkg-${Date.now()}-${pIdx}`;
+    const vol = (pkg.length && pkg.width && pkg.height) ? (Number(pkg.length) * Number(pkg.width) * Number(pkg.height)) / 5000 : 0;
+    await sql`
+      INSERT INTO shipment_packages (
+        id, shipment_id, package_reference, description, quantity, weight, weight_unit, length, width, height, dimension_unit, volumetric_weight, package_type, declared_value, fragile, handling_instructions
+      ) VALUES (
+        ${pkgId}, ${shipmentId}, ${pkg.package_reference || `${trackingNumber}-P${pIdx}`}, ${pkg.description || 'General Cargo'}, ${Number(pkg.quantity || 1)}, ${Number(pkg.weight || 1)}, ${pkg.weight_unit || 'kg'}, ${pkg.length ? Number(pkg.length) : null}, ${pkg.width ? Number(pkg.width) : null}, ${pkg.height ? Number(pkg.height) : null}, ${pkg.dimension_unit || 'cm'}, ${Number(vol.toFixed(2))}, ${pkg.package_type || 'Box / Carton'}, ${Number(pkg.declared_value || 0)}, ${pkg.fragile ? 1 : 0}, ${pkg.handling_instructions || null}
+      )
+      ON CONFLICT (id) DO NOTHING;
+    `;
+    pIdx++;
+  }
+
+  // Insert initial tracking event
+  const evtId = `evt-${Date.now()}`;
+  await sql`
+    INSERT INTO tracking_events (
+      id, shipment_id, status, event_title, event_description, location_name, city, country, facility_name, is_public, created_by
+    ) VALUES (
+      ${evtId}, ${shipmentId}, 'Shipment Created', 'Shipment Order Created & Electronic Documentation Processed', 'Shipping order registered in system. Consignment preparing for facility dispatch.', ${`${data.origin_facility || data.origin_city}`}, ${data.origin_city}, ${data.origin_country}, ${data.origin_facility || `${data.origin_city} Intake Facility`}, 1, ${data.created_by || 'admin@vedcourier.com'}
+    )
+    ON CONFLICT (id) DO NOTHING;
+  `;
+
+  return { id: shipmentId, tracking_number: trackingNumber };
+}
+
+export async function getPostgresShipmentById(idOrTracking: string) {
+  const sql = getSql();
+  if (!sql) return null;
+  await initPostgresDb();
+
+  const shipments = await sql`
+    SELECT * FROM shipments WHERE id = ${idOrTracking} OR tracking_number = ${idOrTracking} LIMIT 1;
+  `;
+  if (!shipments || shipments.length === 0) return null;
+
+  const shipment = shipments[0];
+  const packages = await sql`SELECT * FROM shipment_packages WHERE shipment_id = ${shipment.id};`;
+  const events = await sql`SELECT * FROM tracking_events WHERE shipment_id = ${shipment.id} ORDER BY event_timestamp ASC;`;
+
+  return {
+    ...shipment,
+    packages: packages || [],
+    events: events || [],
+    documents: [],
+  };
+}
+
+export async function getPostgresShipments() {
+  const sql = getSql();
+  if (!sql) return null;
+  await initPostgresDb();
+
+  const shipments = await sql`
+    SELECT * FROM shipments ORDER BY created_at DESC LIMIT 100;
+  `;
+  return shipments || [];
 }

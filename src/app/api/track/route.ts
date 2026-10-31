@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getShipmentByTrackingNumber } from '@/lib/db';
+import { isPostgresConfigured, getPostgresShipmentById } from '@/lib/postgres';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +14,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const rawShipment = getShipmentByTrackingNumber(trackingId.trim());
+    let rawShipment: any = null;
+
+    if (isPostgresConfigured()) {
+      try {
+        rawShipment = await getPostgresShipmentById(trackingId.trim());
+      } catch (pgErr) {
+        console.warn('Postgres tracking lookup warning:', pgErr);
+      }
+    }
+
+    if (!rawShipment) {
+      rawShipment = getShipmentByTrackingNumber(trackingId.trim());
+    }
 
     if (!rawShipment) {
       return NextResponse.json(

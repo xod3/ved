@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getShipmentById } from '@/lib/db';
+import { isPostgresConfigured, getPostgresShipmentById } from '@/lib/postgres';
 import { 
   Package, 
   MapPin, 
@@ -28,7 +29,15 @@ export default async function ShipmentDetailPage({ params, searchParams }: Props
   const { id } = await params;
   const { created, tracking } = await searchParams;
 
-  const shipment = getShipmentById(id);
+  let shipment = getShipmentById(id);
+
+  if (!shipment && isPostgresConfigured()) {
+    try {
+      shipment = await getPostgresShipmentById(id);
+    } catch {
+      // fallback
+    }
+  }
 
   if (!shipment) {
     if (created === 'true' || tracking) {
