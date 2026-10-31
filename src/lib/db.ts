@@ -1,17 +1,61 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 
-// Database file path
-const dataDir = path.join(process.cwd(), 'data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+// Determine writable database directory (Vercel Serverless read-only filesystem requires os.tmpdir())
+function getDatabaseInstance() {
+  const isVercel = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+  let baseDir = path.join(process.cwd(), 'data');
+
+  // If in Vercel or read-only filesystem, use os.tmpdir()
+  if (isVercel) {
+    baseDir = path.join(os.tmpdir(), 'ved_data');
+  }
+
+  if (!fs.existsSync(baseDir)) {
+    try {
+      fs.mkdirSync(baseDir, { recursive: true });
+    } catch {
+      // If mkdir in process.cwd failed due to EROFS, fallback to tmpdir
+      baseDir = path.join(os.tmpdir(), 'ved_data');
+      if (!fs.existsSync(baseDir)) {
+        try {
+          fs.mkdirSync(baseDir, { recursive: true });
+        } catch {
+          // ignore
+        }
+      }
+    }
+  }
+
+  const dbPath = path.join(baseDir, 'ved_courier.db');
+
+  try {
+    const instance = new Database(dbPath);
+    try {
+      instance.pragma('journal_mode = WAL');
+      instance.pragma('foreign_keys = ON');
+    } catch {
+      // In some serverless environments WAL mode is not permitted, proceed standard
+    }
+    return instance;
+  } catch (err) {
+    console.warn('Could not open file database, falling back to in-memory SQLite:', err);
+    try {
+      return new Database(':memory:');
+    } catch (e2) {
+      console.error('Fatal: better-sqlite3 failed to initialize:', e2);
+      throw e2;
+    }
+  }
 }
 
-const dbPath = path.join(dataDir, 'ved_courier.db');
-const db = new Database(dbPath);
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+declare global {
+  var __ved_db: any;
+}
+
+const db = global.__ved_db || (global.__ved_db = getDatabaseInstance());
 
 // Initialize database schema
 export function initDb() {
