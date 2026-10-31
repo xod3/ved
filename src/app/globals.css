@@ -2,15 +2,15 @@
 
 @layer base {
   :root {
-    --primary: #0b2240;
-    --primary-light: #163866;
-    --primary-dark: #061324;
-    --accent: #e22026;
-    --accent-hover: #b81419;
-    --background: #f8fafc;
-    --foreground: #0f172a;
+    --primary: #581c87;
+    --primary-light: #7e22ce;
+    --primary-dark: #2e0854;
+    --accent: #9333ea;
+    --accent-hover: #7e22ce;
+    --background: #ffffff;
+    --foreground: #1e1b4b;
     --card: #ffffff;
-    --border: #e2e8f0;
+    --border: #f3e8ff;
   }
 
   body {

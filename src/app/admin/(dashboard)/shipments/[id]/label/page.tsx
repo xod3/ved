@@ -20,7 +20,7 @@ export default async function PrintLabelPage({ params }: Props) {
   }
 
   // Generate scannable QR Code linking to live tracking
-  const trackingUrl = `https://vedcourier.com/track?id=${shipment.tracking_number}`;
+  const trackingUrl = `https://redkoreaservices.com/track?id=${shipment.tracking_number}`;
   const qrCodeDataUrl = await QRCode.toDataURL(trackingUrl, {
     width: 140,
     margin: 1,
@@ -50,7 +50,7 @@ export default async function PrintLabelPage({ params }: Props) {
             <div className="w-12 h-12 relative flex items-center justify-center">
               <Image
                 src="/images/ved-logo.png"
-                alt="VED Courier"
+                alt="VED COURIER LOGISTICS"
                 width={48}
                 height={48}
                 className="object-contain"
@@ -64,7 +64,7 @@ export default async function PrintLabelPage({ params }: Props) {
                 FAST • SAFE • GLOBAL
               </p>
               <p className="text-[9px] text-gray-600">
-                INTERNATIONAL AIR & MARITIME CARGO
+                INTERNATIONAL AIR &amp; MARITIME CARGO
               </p>
             </div>
           </div>

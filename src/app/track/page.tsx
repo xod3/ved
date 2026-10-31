@@ -3,28 +3,13 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { 
-  Search, 
-  Package, 
-  MapPin, 
-  Calendar, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle, 
-  Plane, 
-  Ship, 
-  Truck, 
-  ShieldCheck, 
-  Copy, 
-  Check, 
-  ArrowRight,
-  ExternalLink,
-  Printer,
-  ChevronRight,
-  HelpCircle,
-  FileCheck
+import {
+  Search, Package, MapPin, Calendar, Clock, CheckCircle,
+  AlertCircle, Plane, Check, ArrowRight, Copy, ShieldCheck, FileCheck,
+  Send, RefreshCw, Printer, ChevronRight
 } from 'lucide-react';
 
 function TrackContent() {
@@ -43,16 +28,11 @@ function TrackContent() {
     setLoading(true);
     setError(null);
     setShipment(null);
-
     try {
       const res = await fetch(`/api/track?id=${encodeURIComponent(id.trim())}`);
       const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Unable to locate tracking record.');
-      } else {
-        setShipment(data.shipment);
-      }
+      if (!res.ok) setError(data.error || 'Unable to locate tracking record.');
+      else setShipment(data.shipment);
     } catch {
       setError('Network communication failed. Please check your connection.');
     } finally {
@@ -61,10 +41,7 @@ function TrackContent() {
   };
 
   useEffect(() => {
-    if (initialId) {
-      setInputVal(initialId);
-      performLookup(initialId);
-    }
+    if (initialId) { setInputVal(initialId); performLookup(initialId); }
   }, [initialId]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -82,14 +59,13 @@ function TrackContent() {
     }
   };
 
-  // Status mapping for progress stages
   const stages = [
-    { key: 'created', label: 'Order Created' },
-    { key: 'origin', label: 'Collected / Origin Hub' },
-    { key: 'transit', label: 'In Transit' },
-    { key: 'customs', label: 'Customs Clearance' },
-    { key: 'delivery', label: 'Out for Delivery' },
-    { key: 'delivered', label: 'Delivered' },
+    { key: 'created', label: 'Order Created', icon: Package },
+    { key: 'origin', label: 'Origin Hub', icon: MapPin },
+    { key: 'transit', label: 'In Transit', icon: Plane },
+    { key: 'customs', label: 'Customs', icon: FileCheck },
+    { key: 'delivery', label: 'Out for Delivery', icon: ArrowRight },
+    { key: 'delivered', label: 'Delivered', icon: CheckCircle },
   ];
 
   const getStageIndex = (status: string) => {
@@ -104,13 +80,13 @@ function TrackContent() {
 
   const currentStageIndex = shipment ? getStageIndex(shipment.current_status) : 0;
 
-  const getStatusBadgeClass = (status: string) => {
+  const getStatusBadge = (status: string) => {
     const s = (status || '').toLowerCase();
     if (s.includes('delivered')) return 'bg-emerald-100 text-emerald-800 border-emerald-300';
     if (s.includes('out for delivery')) return 'bg-amber-100 text-amber-800 border-amber-300';
-    if (s.includes('customs')) return 'bg-purple-100 text-purple-800 border-purple-300';
+    if (s.includes('customs')) return 'bg-purple-100 text-purple-800 border-purple-300 font-bold';
     if (s.includes('delayed') || s.includes('exception') || s.includes('hold')) return 'bg-red-100 text-red-800 border-red-300';
-    return 'bg-blue-100 text-blue-800 border-blue-300';
+    return 'bg-purple-100 text-purple-900 border-purple-300 font-bold';
   };
 
   const demoNumbers = [
@@ -124,45 +100,48 @@ function TrackContent() {
     <div className="flex flex-col min-h-screen bg-slate-50">
       <Navbar />
 
-      {/* Header Banner with Logistics Backdrop */}
-      <section className="relative bg-[#0b2240] text-white py-14 px-4 sm:px-8 border-b-4 border-[#e22026] overflow-hidden">
+      {/* ─── TRACK HERO IN PURPLE & WHITE ─────────────────────────────── */}
+      <section className="relative bg-gradient-to-r from-[#240643] via-[#2e0854] to-[#3b0764] text-white py-16 px-4 sm:px-8 border-b-4 border-purple-500 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/hero-cargo.jpg"
-            alt="International Air Cargo Terminal"
+            alt="Cargo Terminal"
             fill
-            className="object-cover opacity-25"
+            className="object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#061426] via-[#0b2240]/95 to-[#0b2240]/85" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#240643]/95 via-[#2e0854]/90 to-[#2e0854]/80" />
         </div>
-        <div className="max-w-5xl mx-auto space-y-4 relative z-10">
-          <div className="flex items-center gap-2 text-xs font-bold text-red-300 uppercase tracking-wider">
-            <Search className="w-4 h-4 text-[#e22026]" /> Official Consignment Tracking
+
+        <div className="max-w-4xl mx-auto space-y-4 relative z-10">
+          <div className="inline-flex items-center gap-2 bg-purple-900/80 border border-purple-400/30 px-3 py-1 rounded-full text-xs font-bold text-purple-200">
+            <Search className="w-3.5 h-3.5 text-purple-300" />
+            <span>OFFICIAL GIGL-STYLE WAYBILL TRACKER</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
-            Track & Trace Your Consignment
+
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+            Track &amp; Trace Your Waybill
           </h1>
-          <p className="text-slate-300 text-sm max-w-2xl">
-            Live, verified tracking data directly from VED Courier global air cargo terminals, maritime gateways, and customs hubs.
+          <p className="text-purple-200 text-sm max-w-2xl leading-relaxed">
+            Live, verified tracking data directly from VED Courier global air cargo terminals, maritime gateways, and customs hubs across Nigeria, the USA, China, and Korea.
           </p>
 
           {/* Search Box */}
-          <form onSubmit={handleSubmit} className="pt-2 flex flex-col sm:flex-row gap-2 max-w-3xl">
+          <form onSubmit={handleSubmit} className="pt-2 flex flex-col sm:flex-row gap-2.5 max-w-2xl">
             <div className="relative flex-1">
+              <Package className="w-5 h-5 text-purple-400 absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Enter Tracking ID (e.g., VED-2026-000101)"
-                className="w-full pl-11 pr-4 py-3.5 bg-white text-slate-900 rounded-xl font-medium text-sm focus:outline-hidden focus:ring-2 focus:ring-[#e22026] shadow-md"
+                placeholder="Enter Waybill / Tracking ID (e.g. VED-2026-000101)"
+                className="w-full pl-12 pr-4 py-4 bg-white text-slate-900 rounded-xl font-medium text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-400 shadow-lg"
                 required
               />
-              <Package className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="bg-[#e22026] hover:bg-[#b81419] disabled:opacity-70 text-white font-bold px-8 py-3.5 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
+              className="bg-purple-600 hover:bg-purple-700 disabled:opacity-70 text-white font-bold px-8 py-4 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer shrink-0 active:scale-95"
             >
               {loading ? (
                 <>
@@ -171,16 +150,16 @@ function TrackContent() {
                 </>
               ) : (
                 <>
-                  <span>Track Consignment</span>
+                  <span>Track Waybill</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
           </form>
 
-          {/* Quick Demo Links */}
-          <div className="pt-2 flex items-center gap-2 flex-wrap text-xs text-slate-300">
-            <span className="text-slate-400">Sample Active Tracking IDs:</span>
+          {/* Quick Demo Waybills */}
+          <div className="pt-2 flex items-center gap-2 flex-wrap text-xs text-purple-200">
+            <span className="text-purple-300 font-bold">Sample Waybills:</span>
             {demoNumbers.map((d) => (
               <button
                 key={d.id}
@@ -190,146 +169,138 @@ function TrackContent() {
                   router.push(`/track?id=${d.id}`);
                   performLookup(d.id);
                 }}
-                className="bg-white/10 hover:bg-white/20 text-white px-2.5 py-1 rounded text-[11px] font-mono border border-white/10 transition"
+                className="bg-purple-950/80 hover:bg-purple-900 text-purple-100 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold border border-purple-700/60 transition cursor-pointer"
               >
-                {d.id}
+                {d.id} <span className="text-purple-300">({d.label.split('(')[0]})</span>
               </button>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-10">
+      {/* ─── RESULTS AREA ────────────────────────────────────────────── */}
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-8 py-12">
         
         {/* Loading Spinner */}
         {loading && (
-          <div className="bg-white rounded-2xl p-12 text-center shadow-xs border border-slate-200 space-y-4">
-            <div className="w-12 h-12 mx-auto border-4 border-[#0b2240] border-t-[#e22026] rounded-full animate-spin" />
+          <div className="bg-white rounded-3xl p-12 text-center shadow-sm border border-purple-100 space-y-4">
+            <div className="w-12 h-12 mx-auto border-4 border-purple-200 border-t-purple-700 rounded-full animate-spin" />
             <h3 className="text-base font-bold text-slate-800">Querying Global Dispatch Database...</h3>
             <p className="text-xs text-slate-500">Retrieving authentic milestone timeline and current facility coordinates.</p>
           </div>
         )}
 
-        {/* Error / Not Found View */}
+        {/* Error State */}
         {error && !loading && (
-          <div className="bg-white rounded-2xl p-8 shadow-xs border border-red-200 text-center space-y-4">
-            <div className="w-14 h-14 mx-auto rounded-full bg-red-100 text-[#e22026] flex items-center justify-center">
-              <AlertCircle className="w-8 h-8" />
+          <div className="bg-white rounded-3xl p-10 shadow-sm border border-red-200 text-center space-y-4">
+            <div className="w-14 h-14 mx-auto rounded-full bg-red-50 text-red-600 flex items-center justify-center">
+              <AlertCircle className="w-7 h-7" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900">Tracking Record Not Found</h3>
-            <p className="text-sm text-slate-600 max-w-md mx-auto">
-              {error}
-            </p>
-            <div className="pt-3 flex items-center justify-center gap-4 text-xs">
+            <h3 className="text-xl font-bold text-slate-900">Waybill Record Not Found</h3>
+            <p className="text-sm text-slate-500 max-w-sm mx-auto">{error}</p>
+            <div className="flex items-center justify-center gap-4 text-sm pt-2">
               <button
                 onClick={() => {
                   setInputVal('VED-2026-000101');
                   router.push('/track?id=VED-2026-000101');
                   performLookup('VED-2026-000101');
                 }}
-                className="bg-[#0b2240] text-white px-4 py-2 rounded-lg font-bold hover:bg-[#163866] transition"
+                className="bg-purple-700 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-purple-800 transition text-sm"
               >
                 Try Demo ID VED-2026-000101
               </button>
-              <a
-                href="/contact"
-                className="text-slate-700 hover:text-black font-semibold underline"
-              >
-                Contact Dispatch Helpdesk
-              </a>
+              <Link href="/contact" className="text-purple-700 hover:text-purple-900 font-semibold underline text-sm">
+                Contact Support Desk
+              </Link>
             </div>
           </div>
         )}
 
-        {/* Empty State before any search */}
+        {/* Empty State */}
         {!shipment && !loading && !error && (
-          <div className="bg-white rounded-2xl p-12 text-center shadow-xs border border-slate-200 space-y-4">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-100 text-[#0b2240] flex items-center justify-center">
-              <Package className="w-8 h-8 text-[#0b2240]" />
+          <div className="bg-white rounded-3xl p-12 text-center shadow-sm border border-purple-100 space-y-4">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-purple-50 flex items-center justify-center text-purple-700">
+              <Package className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900">Enter a Tracking Number Above</h3>
-            <p className="text-sm text-slate-500 max-w-lg mx-auto">
-              Please provide the tracking ID issued on your VED Courier booking confirmation, bill of lading, or dispatch label.
+            <h3 className="text-xl font-bold text-[#2e0854]">Enter a Waybill Number Above</h3>
+            <p className="text-sm text-slate-500 max-w-md mx-auto">
+              Please enter the tracking waybill issued on your VED Courier booking confirmation, air waybill, or dispatch receipt.
             </p>
-            <div className="pt-2 flex justify-center gap-3">
-              <button
-                onClick={() => {
-                  setInputVal('VED-2026-000101');
-                  router.push('/track?id=VED-2026-000101');
-                  performLookup('VED-2026-000101');
-                }}
-                className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-4 py-2 rounded-lg transition"
-              >
-                Inspect Sample US → China Record
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                setInputVal('VED-2026-000101');
+                router.push('/track?id=VED-2026-000101');
+                performLookup('VED-2026-000101');
+              }}
+              className="text-xs bg-purple-100 hover:bg-purple-200 text-purple-900 font-bold px-5 py-2.5 rounded-xl transition"
+            >
+              View Sample Record (US → China)
+            </button>
           </div>
         )}
 
-        {/* Active Shipment Display */}
+        {/* ─── ACTIVE SHIPMENT DISPLAY (PURPLE & WHITE) ───────────────── */}
         {shipment && !loading && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             
-            {/* Top Shipment Card */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xs border border-slate-200 space-y-6">
+            {/* Top Status Card */}
+            <div className="bg-white rounded-3xl border border-purple-100 shadow-sm overflow-hidden">
               
-              {/* Card Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+              {/* Header in Deep Purple */}
+              <div className="bg-gradient-to-r from-[#240643] via-[#2e0854] to-[#3b0764] px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
                 <div>
+                  <p className="text-[10px] font-bold text-purple-300 uppercase tracking-wider mb-1">Waybill Identification</p>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Tracking Identification
-                    </span>
+                    <h2 className="text-2xl font-black font-mono text-white tracking-tight">
+                      {shipment.tracking_number}
+                    </h2>
                     <button
                       onClick={copyTracking}
-                      className="text-slate-400 hover:text-slate-600 transition p-1"
-                      title="Copy Tracking Number"
+                      className="text-purple-300 hover:text-white transition p-1.5 rounded-lg hover:bg-white/10"
+                      title="Copy Waybill"
                     >
-                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                     </button>
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-black font-mono text-[#0b2240] tracking-tight">
-                    {shipment.tracking_number}
-                  </h2>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-black uppercase tracking-wide border shadow-2xs ${getStatusBadgeClass(shipment.current_status)}`}>
-                    {shipment.current_status}
-                  </span>
-                </div>
+                <span className={`self-start sm:self-center px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wide border ${getStatusBadge(shipment.current_status)}`}>
+                  {shipment.current_status}
+                </span>
               </div>
 
-              {/* Progress Milestones Bar */}
-              <div className="py-2">
+              {/* Progress Milestones Bar (GIGL Purple Stepper) */}
+              <div className="px-6 py-6 border-b border-purple-50">
                 <div className="relative">
-                  {/* Progress Line */}
-                  <div className="hidden sm:block absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -translate-y-1/2 z-0" />
-                  <div 
-                    className="hidden sm:block absolute top-1/2 left-0 h-1 bg-[#e22026] -translate-y-1/2 z-0 transition-all duration-500"
-                    style={{ width: `${(currentStageIndex / (stages.length - 1)) * 100}%` }}
+                  <div className="absolute top-4 left-4 right-4 h-1 bg-purple-100 hidden sm:block" />
+                  <div
+                    className="absolute top-4 left-4 h-1 bg-purple-700 transition-all duration-700 hidden sm:block"
+                    style={{ width: `calc(${(currentStageIndex / (stages.length - 1)) * 100}% - 2rem)` }}
                   />
 
-                  {/* Stage Points */}
-                  <div className="grid grid-cols-2 sm:grid-cols-6 gap-4 relative z-10">
-                    {stages.map((stage, idx) => {
-                      const isCompleted = idx <= currentStageIndex;
-                      const isCurrent = idx === currentStageIndex;
-
+                  <div className="flex justify-between relative z-10">
+                    {stages.map(({ key, label, icon: SIcon }, idx) => {
+                      const done = idx <= currentStageIndex;
+                      const current = idx === currentStageIndex;
                       return (
-                        <div key={stage.key} className="flex flex-col sm:items-center text-left sm:text-center space-y-1.5">
-                          <div 
-                            className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition ${
-                              isCompleted
-                                ? 'bg-[#e22026] text-white shadow-md'
-                                : 'bg-slate-200 text-slate-500'
-                            } ${isCurrent ? 'ring-4 ring-red-200' : ''}`}
-                          >
-                            {isCompleted ? <Check className="w-4 h-4 stroke-[3]" /> : idx + 1}
+                        <div key={key} className="flex flex-col items-center gap-2 text-center w-14">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition ${
+                            done
+                              ? current
+                                ? 'bg-purple-700 border-purple-700 shadow-md ring-4 ring-purple-200'
+                                : 'bg-[#2e0854] border-[#2e0854]'
+                              : 'bg-white border-slate-300'
+                          }`}>
+                            {done ? (
+                              current
+                                ? <SIcon className="w-4 h-4 text-white" />
+                                : <Check className="w-4 h-4 text-white stroke-[3]" />
+                            ) : (
+                              <span className="text-[10px] font-bold text-slate-400">{idx + 1}</span>
+                            )}
                           </div>
-                          <span className={`text-[11px] font-bold ${isCurrent ? 'text-[#0b2240]' : isCompleted ? 'text-slate-800' : 'text-slate-400'}`}>
-                            {stage.label}
+                          <span className={`text-[10px] font-bold leading-tight ${current ? 'text-purple-800' : done ? 'text-slate-700' : 'text-slate-400'}`}>
+                            {label}
                           </span>
                         </div>
                       );
@@ -338,131 +309,117 @@ function TrackContent() {
                 </div>
               </div>
 
-              {/* Origin to Destination Route Banner */}
-              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6">
-                
-                {/* Origin */}
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                  <div className="w-10 h-10 rounded-xl bg-blue-100 text-[#0b2240] flex items-center justify-center shrink-0">
-                    <MapPin className="w-5 h-5 text-[#0b2240]" />
+              {/* Origin to Destination Corridor Strip */}
+              <div className="px-6 py-5 bg-purple-50/50 border-b border-purple-100">
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
+                  
+                  {/* Origin */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+                      <MapPin className="w-5 h-5 text-purple-700" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-purple-800 block">Origin Hub</span>
+                      <p className="font-black text-[#2e0854] text-sm">{shipment.origin_city}, {shipment.origin_country}</p>
+                      {shipment.origin_facility && <p className="text-[11px] text-slate-500">{shipment.origin_facility}</p>}
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Origin</span>
-                    <p className="font-extrabold text-base text-[#0b2240]">{shipment.origin_city}, {shipment.origin_country}</p>
-                    <p className="text-xs text-slate-500">{shipment.origin_facility}</p>
+
+                  {/* Transport Indicator */}
+                  <div className="flex items-center gap-2 mx-auto md:mx-0">
+                    <div className="w-10 h-0.5 bg-purple-300" />
+                    <div className="bg-purple-700 rounded-full p-1.5 shadow-sm">
+                      <Plane className="w-3.5 h-3.5 text-white" />
+                    </div>
+                    <div className="w-10 h-0.5 bg-purple-300" />
+                  </div>
+
+                  {/* Destination */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+                      <MapPin className="w-5 h-5 text-emerald-700" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">Destination</span>
+                      <p className="font-black text-[#2e0854] text-sm">{shipment.destination_city}, {shipment.destination_country}</p>
+                      {shipment.destination_facility && <p className="text-[11px] text-slate-500">{shipment.destination_facility}</p>}
+                    </div>
+                  </div>
+
+                  {/* Mode */}
+                  <div className="md:ml-auto text-right">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-800 block">Transport Mode</span>
+                    <p className="font-bold text-[#2e0854] text-sm">{shipment.transport_mode}</p>
+                    {shipment.transit_hubs && <p className="text-[11px] text-slate-500">Via: {shipment.transit_hubs}</p>}
                   </div>
                 </div>
-
-                {/* Transit Indicator */}
-                <div className="flex flex-col items-center justify-center px-4">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
-                    <span>{shipment.transport_mode}</span>
-                  </div>
-                  <div className="flex items-center gap-2 my-1">
-                    <div className="w-12 h-0.5 bg-slate-300" />
-                    <Plane className="w-4 h-4 text-[#e22026]" />
-                    <div className="w-12 h-0.5 bg-slate-300" />
-                  </div>
-                  <span className="text-[11px] font-semibold text-slate-400">
-                    {shipment.transit_hubs ? `Via: ${shipment.transit_hubs}` : 'Direct Cargo Flight'}
-                  </span>
-                </div>
-
-                {/* Destination */}
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                    <MapPin className="w-5 h-5 text-emerald-700" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Destination</span>
-                    <p className="font-extrabold text-base text-[#0b2240]">{shipment.destination_city}, {shipment.destination_country}</p>
-                    <p className="text-xs text-slate-500">{shipment.destination_facility}</p>
-                  </div>
-                </div>
-
               </div>
 
               {/* Key Metrics Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 text-xs">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="text-slate-500 font-medium block">Current Recorded Location</span>
-                  <span className="font-bold text-[#0b2240] text-sm mt-0.5 block">
-                    {shipment.current_recorded_location}
-                  </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-purple-100 text-xs">
+                <div className="p-4 sm:p-5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Current Facility</span>
+                  <span className="font-extrabold text-[#2e0854] text-sm block leading-tight">{shipment.current_recorded_location}</span>
                 </div>
-
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="text-slate-500 font-medium block">Estimated Delivery Date</span>
-                  <span className="font-bold text-[#0b2240] text-sm mt-0.5 block">
-                    {shipment.estimated_delivery_date || 'In Transit Scheduling'}
-                  </span>
+                <div className="p-4 sm:p-5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Est. Delivery</span>
+                  <span className="font-extrabold text-[#2e0854] text-sm block leading-tight">{shipment.estimated_delivery_date || 'In Transit Scheduling'}</span>
                 </div>
-
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="text-slate-500 font-medium block">Total Chargeable Weight</span>
-                  <span className="font-bold text-[#0b2240] text-sm mt-0.5 block">
-                    {shipment.total_actual_weight} {shipment.weight_unit} ({shipment.package_count} package{shipment.package_count > 1 ? 's' : ''})
-                  </span>
+                <div className="p-4 sm:p-5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Chargeable Weight</span>
+                  <span className="font-extrabold text-[#2e0854] text-sm block leading-tight">{shipment.total_actual_weight} {shipment.weight_unit} ({shipment.package_count} pkg)</span>
                 </div>
-
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="text-slate-500 font-medium block">Carrier & Service Type</span>
-                  <span className="font-bold text-[#0b2240] text-sm mt-0.5 block">
-                    {shipment.service_type}
-                  </span>
+                <div className="p-4 sm:p-5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Service Type</span>
+                  <span className="font-extrabold text-[#2e0854] text-sm block leading-tight">{shipment.service_type}</span>
                 </div>
               </div>
 
             </div>
 
-            {/* Tracking History Timeline */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xs border border-slate-200 space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-                <h3 className="text-lg font-black text-[#0b2240] flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-[#e22026]" /> Chronological Milestone Timeline
+            {/* Timeline Milestones Card */}
+            <div className="bg-white rounded-3xl border border-purple-100 shadow-sm p-6 sm:p-8 space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-purple-50">
+                <h3 className="text-lg font-black text-[#2e0854] flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-purple-700" />
+                  Chronological Milestone Timeline
                 </h3>
-                <span className="text-xs text-slate-500 font-medium">
-                  {shipment.events?.length || 0} Verified Milestones
+                <span className="text-xs text-purple-800 bg-purple-50 px-3 py-1 rounded-full font-bold border border-purple-200">
+                  {shipment.events?.length || 0} Verified Checkpoints
                 </span>
               </div>
 
               {(!shipment.events || shipment.events.length === 0) ? (
-                <p className="text-xs text-slate-500 py-4">Location not yet updated. Consignment intake in progress.</p>
+                <p className="text-sm text-slate-400 py-4">No location updates yet. Consignment intake in progress.</p>
               ) : (
-                <div className="relative pl-6 space-y-8 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200">
+                <div className="relative pl-7 space-y-6 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-purple-200">
                   {shipment.events.slice().reverse().map((evt: any, i: number) => {
                     const isLatest = i === 0;
                     return (
-                      <div key={evt.id || i} className="relative group">
-                        {/* Dot */}
-                        <div 
-                          className={`absolute -left-6 top-1.5 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs ${
-                            isLatest 
-                              ? 'bg-[#e22026] ring-4 ring-red-100' 
-                              : 'bg-[#0b2240]'
-                          }`}
-                        >
+                      <div key={evt.id || i} className="relative">
+                        <div className={`absolute -left-7 top-1.5 w-5 h-5 rounded-full border-2 border-white shadow-xs flex items-center justify-center ${
+                          isLatest ? 'bg-purple-700 ring-4 ring-purple-100' : 'bg-[#2e0854]'
+                        }`}>
                           <div className="w-1.5 h-1.5 rounded-full bg-white" />
                         </div>
 
-                        {/* Content */}
-                        <div className={`p-4 rounded-xl border transition ${
-                          isLatest ? 'bg-red-50/40 border-red-200 shadow-xs' : 'bg-slate-50 border-slate-200'
+                        <div className={`rounded-2xl border p-4 transition ${
+                          isLatest ? 'bg-purple-50/60 border-purple-200 shadow-xs' : 'bg-slate-50 border-slate-200'
                         }`}>
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1.5">
-                            <h4 className="font-extrabold text-sm text-[#0b2240]">
+                            <h4 className="font-extrabold text-sm text-[#2e0854]">
                               {evt.event_title}
                             </h4>
-                            <span className="text-xs font-mono font-medium text-slate-500">
+                            <span className="text-[11px] font-mono font-medium text-slate-500">
                               {evt.event_timestamp}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 mb-2">
-                            <MapPin className="w-3.5 h-3.5 text-[#e22026]" />
+                          <div className="flex items-center gap-1.5 text-xs text-purple-900 font-semibold mb-1.5">
+                            <MapPin className="w-3.5 h-3.5 text-purple-700 shrink-0" />
                             <span>{evt.location_name}{evt.city ? `, ${evt.city}` : ''}, {evt.country}</span>
                             {evt.facility_name && (
-                              <span className="text-slate-400 font-normal">({evt.facility_name})</span>
+                              <span className="text-slate-500 font-normal">({evt.facility_name})</span>
                             )}
                           </div>
 
@@ -479,21 +436,22 @@ function TrackContent() {
               )}
             </div>
 
-            {/* Parcel Contents Approval Card */}
+            {/* Package Contents Breakdown */}
             {shipment.packages && shipment.packages.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 space-y-4">
-                <h4 className="font-extrabold text-sm text-[#0b2240] flex items-center gap-2">
-                  <FileCheck className="w-4 h-4 text-emerald-600" /> Package Declarations
+              <div className="bg-white rounded-3xl border border-purple-100 shadow-sm p-6 space-y-4">
+                <h4 className="font-extrabold text-sm text-[#2e0854] flex items-center gap-2">
+                  <FileCheck className="w-4 h-4 text-emerald-600" />
+                  Package Declarations &amp; Manifest
                 </h4>
-                <div className="divide-y divide-slate-100 text-xs">
+                <div className="divide-y divide-purple-50 text-xs">
                   {shipment.packages.map((pkg: any, idx: number) => (
-                    <div key={idx} className="py-2.5 flex items-center justify-between">
+                    <div key={idx} className="py-3 flex items-center justify-between">
                       <div>
                         <span className="font-bold text-slate-800">{pkg.description}</span>
-                        <span className="text-slate-400 block text-[11px]">{pkg.package_type}</span>
+                        <span className="text-slate-400 block text-[11px] mt-0.5">{pkg.package_type}</span>
                       </div>
                       <div className="text-right">
-                        <span className="font-semibold text-slate-700">{pkg.weight} {pkg.weight_unit}</span>
+                        <span className="font-semibold text-purple-900">{pkg.weight} {pkg.weight_unit}</span>
                         <span className="text-slate-400 block text-[11px]">Qty: {pkg.quantity}</span>
                       </div>
                     </div>
@@ -503,12 +461,12 @@ function TrackContent() {
             )}
 
             {/* Privacy Protection Disclaimer */}
-            <div className="p-4 bg-slate-100 rounded-xl border border-slate-200 flex items-start gap-3 text-xs text-slate-600">
-              <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+            <div className="p-4 bg-purple-50 rounded-2xl border border-purple-200 flex items-start gap-3 text-xs text-purple-950">
+              <ShieldCheck className="w-5 h-5 text-purple-700 shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-slate-800">Customer Confidentiality & Privacy Notice</p>
-                <p className="mt-0.5">
-                  To protect commercial confidentiality and recipient privacy, full street addresses, recipient telephone numbers, and financial tariff statements are excluded from public tracking. Authorized account holders can access full records via the Customer & Staff Portal.
+                <p className="font-bold text-[#2e0854] mb-0.5">Privacy Guard Policy</p>
+                <p>
+                  To protect commercial confidentiality and recipient safety, specific street apartment numbers and billing invoices are excluded from public tracking.
                 </p>
               </div>
             </div>
@@ -526,8 +484,8 @@ function TrackContent() {
 export default function TrackPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="w-10 h-10 border-4 border-[#0b2240] border-t-[#e22026] rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-700 rounded-full animate-spin" />
       </div>
     }>
       <TrackContent />

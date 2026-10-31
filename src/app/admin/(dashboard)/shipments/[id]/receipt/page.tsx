@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getShipmentById } from '@/lib/db';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import PrintButton from '@/components/PrintButton';
 
 interface Props {
@@ -42,7 +42,7 @@ export default async function PrintReceiptPage({ params }: Props) {
               <div className="w-14 h-14 relative flex items-center justify-center">
                 <Image
                   src="/images/ved-logo.png"
-                  alt="VED Courier"
+                  alt="VED COURIER LOGISTICS"
                   width={56}
                   height={56}
                   className="object-contain"
@@ -66,10 +66,10 @@ export default async function PrintReceiptPage({ params }: Props) {
 
           <div className="text-right space-y-1">
             <span className="text-xs font-black uppercase text-red-600 bg-red-50 border border-red-200 px-3 py-1 rounded-md inline-block">
-              OFFICIAL FREIGHT WAYBILL & RECEIPT
+              OFFICIAL FREIGHT WAYBILL &amp; RECEIPT
             </span>
             <p className="text-sm font-mono font-bold mt-2">
-              Receipt No: RCT-{shipment.tracking_number.replace('VED-', '')}
+              Receipt No: RCT-{shipment.tracking_number.replace('VED-', '').replace('RKS-', '')}
             </p>
             <p className="text-xs text-slate-500 font-mono">
               Date: {shipment.booking_date}
@@ -170,7 +170,7 @@ export default async function PrintReceiptPage({ params }: Props) {
           <div className="space-y-2 text-xs text-slate-500">
             <span className="font-bold text-slate-700 uppercase block text-[11px]">Notice & Terms</span>
             <p className="leading-relaxed">
-              This document serves as an authentic transport waybill and payment receipt issued by VED COURIER LOGISTICS. All transport services are rendered subject to VED Courier Terms & Conditions of Carriage and international air/maritime treaties.
+              This document serves as an authentic transport waybill and payment receipt issued by VED COURIER LOGISTICS. All transport services are rendered subject to VED Courier Terms &amp; Conditions of Carriage and international air/maritime treaties.
             </p>
             <p className="font-mono text-[10px] text-slate-400">
               Electronic Signature ID: VED-AUTH-{shipment.id}
@@ -220,7 +220,7 @@ export default async function PrintReceiptPage({ params }: Props) {
           <div className="space-y-6">
             <div className="border-b border-slate-400 pb-1 flex items-center justify-center">
               <span className="text-red-700 font-serif italic text-xs font-bold">
-                [ VED COURIER LOGISTICS AUTHORIZED STAMP ]
+                [ RED KOREA SERVICES AUTHORIZED STAMP ]
               </span>
             </div>
             <p className="font-bold text-slate-700 text-center uppercase text-[10px]">
