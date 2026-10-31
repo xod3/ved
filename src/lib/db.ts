@@ -1189,7 +1189,10 @@ export function getShipmentByTrackingNumber(trackingNumber: string) {
 
 export function getShipmentById(id: string) {
   initDb();
-  const shipment = db.prepare('SELECT * FROM shipments WHERE id = ?').get(id) as any;
+  let shipment = db.prepare('SELECT * FROM shipments WHERE id = ?').get(id) as any;
+  if (!shipment) {
+    shipment = db.prepare('SELECT * FROM shipments WHERE tracking_number = ?').get(id) as any;
+  }
   if (!shipment) return null;
 
   const packages = db.prepare('SELECT * FROM shipment_packages WHERE shipment_id = ?').all(shipment.id);

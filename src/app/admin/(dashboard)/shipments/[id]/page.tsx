@@ -31,6 +31,46 @@ export default async function ShipmentDetailPage({ params, searchParams }: Props
   const shipment = getShipmentById(id);
 
   if (!shipment) {
+    if (created === 'true' || tracking) {
+      return (
+        <div className="p-6 sm:p-10 space-y-8 max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl border border-purple-100 p-8 shadow-sm text-center space-y-6">
+            <div className="w-16 h-16 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+            <div className="space-y-2">
+              <span className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">
+                Shipment Successfully Registered
+              </span>
+              <h1 className="text-2xl font-black text-slate-900">
+                Waybill: {tracking || id}
+              </h1>
+              <p className="text-sm text-slate-600 max-w-md mx-auto">
+                Your consignment order has been registered into the dispatch queue with reference <strong className="text-purple-700">{id}</strong>.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+              <Link
+                href="/admin/shipments"
+                className="inline-flex items-center gap-2 bg-purple-700 hover:bg-purple-800 text-white font-bold px-6 py-3 rounded-xl shadow-md transition"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Return to Shipments Registry
+              </Link>
+              <Link
+                href={`/track?id=${tracking || id}`}
+                target="_blank"
+                className="inline-flex items-center gap-2 border border-purple-200 text-purple-700 font-bold px-6 py-3 rounded-xl hover:bg-purple-50 transition"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Open Public Tracking
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
     notFound();
   }
 
