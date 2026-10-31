@@ -1173,8 +1173,19 @@ export function getShipments(params?: {
 
 export function getShipmentByTrackingNumber(trackingNumber: string) {
   initDb();
-  const cleanNumber = trackingNumber.trim().toUpperCase();
-  const shipment = db.prepare('SELECT * FROM shipments WHERE UPPER(tracking_number) = ?').get(cleanNumber) as any;
+  const raw = (trackingNumber || '').trim();
+  const normalized = raw.toUpperCase().replace(/\s+/g, '-').replace(/_+/g, '-');
+  const alphanumeric = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+  let shipment = db.prepare(`
+    SELECT * FROM shipments 
+    WHERE tracking_number = ? 
+       OR id = ?
+       OR tracking_number = ?
+       OR replace(replace(upper(tracking_number), '-', ''), ' ', '') = ?
+    LIMIT 1
+  `).get(normalized, raw, raw, alphanumeric) as any;
+
   if (!shipment) return null;
 
   const packages = db.prepare('SELECT * FROM shipment_packages WHERE shipment_id = ?').all(shipment.id);

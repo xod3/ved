@@ -192,10 +192,208 @@ export async function initPostgresDb() {
       `;
     }
 
+    // Seed initial shipments if table is empty
+    const shipmentCount = await sql`SELECT count(*)::int as count FROM shipments;`;
+    if (shipmentCount[0].count === 0) {
+      await seedPostgresShipments(sql);
+    }
+
     tablesInitialized = true;
     console.log('Postgres/Neon tables ready.');
   } catch (err) {
     console.warn('Postgres table initialization note:', err);
+  }
+}
+
+async function seedPostgresShipments(sql: any) {
+  try {
+    const seedList = [
+      {
+        id: 'ship-001',
+        tracking_number: 'VED-2026-000101',
+        sender_name: 'Apex Precision Technologies Inc.',
+        sender_city: 'New York',
+        sender_country: 'United States',
+        sender_street: '450 West 33rd Street',
+        receiver_name: 'Shanghai Semiconductor Systems Ltd.',
+        receiver_city: 'Shanghai',
+        receiver_country: 'China',
+        receiver_street: 'Building 8, Zhangjiang Hi-Tech Park',
+        origin_city: 'New York',
+        origin_country: 'United States',
+        origin_facility: 'JFK Air Freight Cargo Terminal 4',
+        destination_city: 'Shanghai',
+        destination_country: 'China',
+        destination_facility: 'Shanghai Pudong Airport Customs Center',
+        shipping_route: 'United States → China',
+        transport_mode: 'Air Freight',
+        service_type: 'Priority Air Express',
+        current_status: 'Customs Cleared',
+        current_recorded_location: 'Shanghai Pudong International Hub, China',
+        total_actual_weight: 42.5,
+      },
+      {
+        id: 'ship-002',
+        tracking_number: 'VED-2026-000102',
+        sender_name: 'Guangzhou Electronic Components Corp.',
+        sender_city: 'Guangzhou',
+        sender_country: 'China',
+        sender_street: 'No. 88 Baiyun Industrial Zone',
+        receiver_name: 'Lagos Tech Hub & Devices Hub',
+        receiver_city: 'Lagos',
+        receiver_country: 'Nigeria',
+        receiver_street: '14 Otigba Street, Computer Village, Ikeja',
+        origin_city: 'Guangzhou',
+        origin_country: 'China',
+        origin_facility: 'Guangzhou Baiyun Freight Terminal',
+        destination_city: 'Lagos',
+        destination_country: 'Nigeria',
+        destination_facility: 'Murtala Muhammed International Cargo Area',
+        shipping_route: 'China → Nigeria',
+        transport_mode: 'Air Freight',
+        service_type: 'Express Courier',
+        current_status: 'In Transit',
+        current_recorded_location: 'In Transit to Lagos LOS',
+        total_actual_weight: 120.0,
+      },
+      {
+        id: 'ship-003',
+        tracking_number: 'VED-2026-000103',
+        sender_name: 'Continental Medical Supplies LLC',
+        sender_city: 'Houston',
+        sender_country: 'United States',
+        sender_street: '1200 Post Oak Blvd',
+        receiver_name: 'Abuja Specialist Clinic & Diagnostics',
+        receiver_city: 'Abuja',
+        receiver_country: 'Nigeria',
+        receiver_street: 'Plot 402 Garki II District',
+        origin_city: 'Houston',
+        origin_country: 'United States',
+        origin_facility: 'George Bush Intercontinental Cargo Facility',
+        destination_city: 'Abuja',
+        destination_country: 'Nigeria',
+        destination_facility: 'Nnamdi Azikiwe Airport Cargo Warehouse',
+        shipping_route: 'United States → Nigeria',
+        transport_mode: 'Air Freight',
+        service_type: 'Priority Medical Express',
+        current_status: 'Out for Delivery',
+        current_recorded_location: 'Abuja Dispatch Facility',
+        total_actual_weight: 18.5,
+      },
+      {
+        id: 'ship-004',
+        tracking_number: 'VED-2026-000104',
+        sender_name: 'Seoul Energy Battery Solutions',
+        sender_city: 'Seoul',
+        sender_country: 'South Korea',
+        sender_street: '72 Teheran-ro, Gangnam-gu',
+        receiver_name: 'Pacific Electric Mobility Inc.',
+        receiver_city: 'Los Angeles',
+        receiver_country: 'United States',
+        receiver_street: '1900 Ocean Avenue, Long Beach',
+        origin_city: 'Seoul',
+        origin_country: 'South Korea',
+        origin_facility: 'Incheon International Air Freight Cargo Station',
+        destination_city: 'Los Angeles',
+        destination_country: 'United States',
+        destination_facility: 'Port of Long Beach Freight Center',
+        shipping_route: 'South Korea → United States',
+        transport_mode: 'Sea Freight',
+        service_type: 'Standard Container Freight',
+        current_status: 'Delivered',
+        current_recorded_location: 'Los Angeles Consignee Warehouse',
+        total_actual_weight: 850.0,
+      },
+      {
+        id: 'ship-005',
+        tracking_number: 'VED-2026-000105',
+        sender_name: 'Atlantic Trade & Express Partners',
+        sender_city: 'Atlanta',
+        sender_country: 'United States',
+        sender_street: '3400 Peachtree Road NE',
+        receiver_name: 'Kano Commercial Trading Emporium',
+        receiver_city: 'Kano',
+        receiver_country: 'Nigeria',
+        receiver_street: 'Commercial Road, Bompai Industrial Area',
+        origin_city: 'Atlanta',
+        origin_country: 'United States',
+        origin_facility: 'Hartsfield-Jackson Atlanta Air Logistics Depot',
+        destination_city: 'Kano',
+        destination_country: 'Nigeria',
+        destination_facility: 'Mallam Aminu Kano International Freight Hub',
+        shipping_route: 'United States → Nigeria',
+        transport_mode: 'Air Freight',
+        service_type: 'Express Courier',
+        current_status: 'Shipment Created',
+        current_recorded_location: 'Atlanta Gateway Cargo Terminal, GA',
+        total_actual_weight: 35.0,
+      },
+      {
+        id: 'ship-006',
+        tracking_number: 'VED-2026-000106',
+        sender_name: 'Global Commerce Dispatch Services',
+        sender_city: 'Dallas',
+        sender_country: 'United States',
+        sender_street: '2100 Ross Avenue, Suite 1800',
+        receiver_name: 'Victoria Island Corporate Logistics',
+        receiver_city: 'Lagos',
+        receiver_country: 'Nigeria',
+        receiver_street: 'Ahmadu Bello Way, Victoria Island',
+        origin_city: 'Dallas',
+        origin_country: 'United States',
+        origin_facility: 'DFW International Air Freight Hub',
+        destination_city: 'Lagos',
+        destination_country: 'Nigeria',
+        destination_facility: 'Murtala Muhammed Cargo Complex',
+        shipping_route: 'United States → Nigeria',
+        transport_mode: 'Air Freight',
+        service_type: 'Express Courier',
+        current_status: 'In Transit',
+        current_recorded_location: 'In Transit — Trans-Atlantic Air Corridor',
+        total_actual_weight: 28.0,
+      },
+    ];
+
+    for (const s of seedList) {
+      await sql`
+        INSERT INTO shipments (
+          id, tracking_number, sender_name, sender_city, sender_country, sender_street,
+          receiver_name, receiver_city, receiver_country, receiver_street,
+          origin_city, origin_country, origin_facility, destination_city, destination_country, destination_facility,
+          shipping_route, transport_mode, service_type, current_status, current_recorded_location,
+          total_actual_weight, created_by
+        ) VALUES (
+          ${s.id}, ${s.tracking_number}, ${s.sender_name}, ${s.sender_city}, ${s.sender_country}, ${s.sender_street},
+          ${s.receiver_name}, ${s.receiver_city}, ${s.receiver_country}, ${s.receiver_street},
+          ${s.origin_city}, ${s.origin_country}, ${s.origin_facility}, ${s.destination_city}, ${s.destination_country}, ${s.destination_facility},
+          ${s.shipping_route}, ${s.transport_mode}, ${s.service_type}, ${s.current_status}, ${s.current_recorded_location},
+          ${s.total_actual_weight}, 'admin@vedcourier.com'
+        )
+        ON CONFLICT (id) DO NOTHING;
+      `;
+
+      // Seed package
+      await sql`
+        INSERT INTO shipment_packages (
+          id, shipment_id, package_reference, description, quantity, weight, package_type
+        ) VALUES (
+          ${`pkg-${s.id}-1`}, ${s.id}, ${`${s.tracking_number}-P1`}, 'Consolidated Commercial Cargo', 1, ${s.total_actual_weight}, 'Box / Carton'
+        )
+        ON CONFLICT (id) DO NOTHING;
+      `;
+
+      // Seed event
+      await sql`
+        INSERT INTO tracking_events (
+          id, shipment_id, status, event_title, event_description, location_name, city, country, is_public, created_by
+        ) VALUES (
+          ${`evt-${s.id}-1`}, ${s.id}, ${s.current_status}, ${`Consignment ${s.current_status}`}, ${`Shipment registered and active at ${s.current_recorded_location}`}, ${s.origin_facility}, ${s.origin_city}, ${s.origin_country}, 1, 'admin@vedcourier.com'
+        )
+        ON CONFLICT (id) DO NOTHING;
+      `;
+    }
+  } catch (err) {
+    console.warn('Seed postgres shipments notice:', err);
   }
 }
 
@@ -278,8 +476,17 @@ export async function getPostgresShipmentById(idOrTracking: string) {
   if (!sql) return null;
   await initPostgresDb();
 
+  const raw = (idOrTracking || '').trim();
+  const normalized = raw.toUpperCase().replace(/\s+/g, '-').replace(/_+/g, '-');
+  const alphanumeric = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
   const shipments = await sql`
-    SELECT * FROM shipments WHERE id = ${idOrTracking} OR tracking_number = ${idOrTracking} LIMIT 1;
+    SELECT * FROM shipments 
+    WHERE tracking_number = ${normalized}
+       OR id = ${raw}
+       OR tracking_number = ${raw}
+       OR REPLACE(REPLACE(UPPER(tracking_number), '-', ''), ' ', '') = ${alphanumeric}
+    LIMIT 1;
   `;
   if (!shipments || shipments.length === 0) return null;
 

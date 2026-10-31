@@ -40,7 +40,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50">
-      {/* Top Utility Bar (GIGL Style in Deep Purple & White) */}
+      {/* Top Utility Bar in Deep Purple & White */}
       <div className="bg-[#2e0854] text-purple-100 text-xs py-2 px-4 sm:px-8 border-b border-purple-900/60">
         <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
           <div className="flex items-center gap-5 flex-wrap">
@@ -116,7 +116,7 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Action CTAs (GIGL Style) */}
+          {/* Action CTAs */}
           <div className="flex items-center gap-3">
             <Link
               href="/contact?subject=Book%20Pickup"

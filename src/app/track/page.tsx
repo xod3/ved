@@ -47,8 +47,9 @@ function TrackContent() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputVal.trim()) return;
-    router.push(`/track?id=${encodeURIComponent(inputVal.trim())}`);
-    performLookup(inputVal.trim());
+    const clean = inputVal.trim().toUpperCase().replace(/\s+/g, '-');
+    router.push(`/track?id=${encodeURIComponent(clean)}`);
+    performLookup(clean);
   };
 
   const copyTracking = () => {

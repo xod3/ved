@@ -55,7 +55,7 @@ export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // State: Hero Tab (GIGL signature: track | estimate | book)
+  // State: Hero Tab (VED signature: track | estimate | book)
   const [activeHeroTab, setActiveHeroTab] = useState<'track' | 'estimate' | 'book'>('track');
 
   // State: Rate Calculator
@@ -124,7 +124,8 @@ export default function HomePage() {
   const handleTrackSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!trackingId.trim()) return;
-    router.push(`/track?id=${encodeURIComponent(trackingId.trim())}`);
+    const clean = trackingId.trim().toUpperCase().replace(/\s+/g, '-');
+    router.push(`/track?id=${encodeURIComponent(clean)}`);
   };
 
   const sampleWaybills = [
@@ -148,7 +149,7 @@ export default function HomePage() {
   const chargeableWeight = Math.max(volWeight, boxActualWeight);
 
   // Core Services
-  const giglServices = [
+  const coreServices = [
     {
       title: 'Domestic Express Delivery',
       desc: 'Nationwide door-to-door courier delivery with same-day and next-day options for packages, documents, and retail goods.',
@@ -211,7 +212,7 @@ export default function HomePage() {
     },
   ];
 
-  // Journey milestones (GIGL style)
+  // Journey milestones
   const journeySteps = [
     {
       step: '01',
@@ -323,7 +324,7 @@ export default function HomePage() {
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
 
-      {/* ─── 1. GIGL-STYLE HERO: SPLIT LAYOUT IN PURPLE & WHITE ─────────── */}
+      {/* ─── 1. HERO SECTION: SPLIT LAYOUT IN PURPLE & WHITE ─────────── */}
       <section className="relative bg-gradient-to-b from-[#faf5ff] via-white to-white pt-10 pb-20 px-4 sm:px-8 border-b border-purple-100 overflow-hidden">
         {/* Subtle decorative purple background blobs */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-200/30 rounded-full blur-3xl pointer-events-none -mr-40 -mt-20" />
@@ -332,7 +333,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            {/* Left Column: Heading + Interactive GIGL Action Card */}
+            {/* Left Column: Heading + Interactive Action Card */}
             <div className="lg:col-span-7 space-y-6">
               
               {/* Badge */}
@@ -352,7 +353,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* ── GIGL Signature Interactive Tabbed Card ── */}
+              {/* ── Interactive Tabbed Action Card ── */}
               <div className="bg-white rounded-3xl shadow-xl border border-purple-200/80 overflow-hidden">
                 {/* Tabs Header */}
                 <div className="grid grid-cols-3 bg-purple-50/70 border-b border-purple-100 text-xs sm:text-sm font-bold">
@@ -613,7 +614,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── 2. GIGL-STYLE STATS COUNTER STRIP (PURPLE & WHITE) ───────── */}
+      {/* ─── 2. STATS COUNTER STRIP (PURPLE & WHITE) ───────── */}
       <section className="bg-white py-12 border-b border-purple-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
@@ -642,7 +643,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── 3. CORE GIGL SERVICES SECTION WITH PICTURES ─────────────── */}
+      {/* ─── 3. CORE SERVICES SECTION WITH PICTURES ─────────────── */}
       <section className="py-20 bg-slate-50/70 border-b border-purple-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           
@@ -659,7 +660,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-            {giglServices.map((svc, i) => {
+            {coreServices.map((svc, i) => {
               const Icon = svc.icon;
               return (
                 <div
@@ -725,7 +726,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── 4. GIGL-STYLE VED MOBILE APP / DIGITAL EXPERIENCE ─────────── */}
+      {/* ─── 4. VED MOBILE APP / DIGITAL EXPERIENCE ─────────── */}
       <section className="py-20 bg-gradient-to-r from-[#2e0854] via-[#3b0764] to-[#240643] text-white overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -821,7 +822,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── 5. INTERACTIVE HOW IT WORKS (GIGL WORKFLOW STEPPER) ──────── */}
+      {/* ─── 5. INTERACTIVE HOW IT WORKS STEPPER ──────── */}
       <section className="py-20 bg-white border-b border-purple-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           
@@ -1023,7 +1024,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── 8. GIGL-STYLE REVIEWS & TESTIMONIALS ──────────────────────── */}
+      {/* ─── 8. CLIENT REVIEWS & TESTIMONIALS ──────────────────────── */}
       <section className="py-20 bg-slate-50 border-b border-purple-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           
@@ -1135,7 +1136,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── 10. GIGL-STYLE CTA BANNER IN ROYAL PURPLE ─────────────────── */}
+      {/* ─── 10. CTA BANNER IN ROYAL PURPLE ─────────────────── */}
       <section className="bg-gradient-to-r from-[#2e0854] via-purple-800 to-[#2e0854] py-16 px-4 sm:px-8 text-white">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div>

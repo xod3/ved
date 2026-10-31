@@ -14,18 +14,27 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const raw = trackingId.trim();
+    const normalized = raw.toUpperCase().replace(/\s+/g, '-').replace(/_+/g, '-');
+
     let rawShipment: any = null;
 
     if (isPostgresConfigured()) {
       try {
-        rawShipment = await getPostgresShipmentById(trackingId.trim());
+        rawShipment = await getPostgresShipmentById(normalized);
+        if (!rawShipment && raw !== normalized) {
+          rawShipment = await getPostgresShipmentById(raw);
+        }
       } catch (pgErr) {
         console.warn('Postgres tracking lookup warning:', pgErr);
       }
     }
 
     if (!rawShipment) {
-      rawShipment = getShipmentByTrackingNumber(trackingId.trim());
+      rawShipment = getShipmentByTrackingNumber(normalized);
+      if (!rawShipment && raw !== normalized) {
+        rawShipment = getShipmentByTrackingNumber(raw);
+      }
     }
 
     if (!rawShipment) {

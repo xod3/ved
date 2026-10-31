@@ -18,7 +18,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-16 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-purple-900/60">
           
-          {/* Brand Column (GIGL Style) */}
+          {/* Brand Column */}
           <div className="lg:col-span-2 space-y-5">
             <Link href="/" className="flex items-center gap-3 group w-fit">
               <div className="w-14 h-14 bg-white rounded-xl p-1 border border-purple-300 shadow-md flex items-center justify-center shrink-0">
