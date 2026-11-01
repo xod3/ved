@@ -11,7 +11,7 @@ export default function CompanySettingsPage() {
     support_email: 'support@vedcourier.com',
     support_phone: '+1 (808) 301-0314',
     whatsapp_number: '+1 (808) 301-0314',
-    headquarters_address: '100 Global Logistics Parkway, Suite 400, New York, NY 10001, USA',
+    headquarters_address: 'W 109th St, New York, NY 10025, USA',
     volumetric_divisor: '5000',
     default_currency: 'USD',
     email_notifications_enabled: 'false',

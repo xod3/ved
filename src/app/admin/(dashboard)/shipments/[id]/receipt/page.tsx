@@ -71,7 +71,7 @@ export default async function PrintReceiptPage({ params }: Props) {
               </div>
             </div>
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-              100 Global Logistics Parkway, Suite 400, New York, NY 10001, USA<br />
+              W 109th St, New York, NY 10025, USA<br />
               WhatsApp: +1 (808) 301-0314 | Email: support@vedcourier.com<br />
               Web: www.vedcourier.online
             </p>
@@ -233,7 +233,7 @@ export default async function PrintReceiptPage({ params }: Props) {
           <div className="space-y-6">
             <div className="border-b border-slate-400 pb-1 flex items-center justify-center">
               <span className="text-red-700 font-serif italic text-xs font-bold">
-                [ RED KOREA SERVICES AUTHORIZED STAMP ]
+                [ VED COURIER LOGISTICS AUTHORIZED STAMP ]
               </span>
             </div>
             <p className="font-bold text-slate-700 text-center uppercase text-[10px]">

@@ -112,8 +112,8 @@ export default function Footer() {
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
                 <span className="text-xs text-purple-200 leading-relaxed">
-                  100 Global Logistics Parkway, Suite 400<br />
-                  New York, NY 10001, United States
+                  W 109th St<br />
+                  New York, NY 10025, USA
                 </span>
               </div>
               <div className="flex items-center gap-2.5">

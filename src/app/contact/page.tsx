@@ -53,7 +53,7 @@ export default function ContactPage() {
     {
       icon: MapPin,
       label: 'Global HQ & Logistics Hub',
-      value: '100 Global Logistics Parkway, Suite 400\nNew York, NY 10001, United States',
+      value: 'W 109th St\nNew York, NY 10025, USA',
       iconBg: 'bg-purple-100',
       iconColor: 'text-purple-700',
       isAddress: true,
