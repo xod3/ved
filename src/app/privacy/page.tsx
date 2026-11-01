@@ -64,7 +64,7 @@ export default function PrivacyPolicyPage() {
           <section className="space-y-3">
             <h2 className="text-lg font-black text-[#2e0854]">6. Contact Privacy Officer</h2>
             <p>
-              If you have inquiries regarding your personal information, address modifications, or privacy rights, please contact our data compliance desk at <a href="mailto:privacy@vedcourier.com" className="text-purple-700 font-bold underline">privacy@vedcourier.com</a> or call +1 (800) 592-8334.
+              If you have inquiries regarding your personal information, address modifications, or privacy rights, please contact our data compliance desk at <a href="mailto:privacy@vedcourier.com" className="text-purple-700 font-bold underline">privacy@vedcourier.com</a> or message us on WhatsApp at <a href="https://wa.me/18083010314" target="_blank" rel="noopener noreferrer" className="text-purple-700 font-bold underline">+1 (808) 301-0314</a> (WhatsApp Only).
             </p>
           </section>
         </div>

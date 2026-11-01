@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Contact form submission error:', error);
     return NextResponse.json(
-      { error: 'Unable to submit your inquiry at this moment. Please call our hotline directly.' },
+      { error: 'Unable to submit your inquiry at this moment. Please message us on WhatsApp at +1 (808) 301-0314.' },
       { status: 500 }
     );
   }

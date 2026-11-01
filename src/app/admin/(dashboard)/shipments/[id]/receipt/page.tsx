@@ -72,8 +72,8 @@ export default async function PrintReceiptPage({ params }: Props) {
             </div>
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
               100 Global Logistics Parkway, Suite 400, New York, NY 10001, USA<br />
-              Tel: +1 (800) 592-8334 | Email: support@vedcourier.com<br />
-              Web: www.vedcourier.com
+              WhatsApp: +1 (808) 301-0314 | Email: support@vedcourier.com<br />
+              Web: www.vedcourier.online
             </p>
           </div>
 

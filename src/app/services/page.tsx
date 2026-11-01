@@ -71,7 +71,7 @@ export default function ServicesPage() {
       features: [
         'Automated API integration with e-commerce storefronts',
         'Smart warehousing and pick-pack-ship operations',
-        'Dedicated corporate merchant support hotline',
+        'Dedicated corporate merchant WhatsApp support desk',
         'Cash-on-Delivery (COD) reconciliation support',
       ],
       leadTime: 'Scheduled & Same-Day',

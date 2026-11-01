@@ -22,6 +22,7 @@ import {
   ChevronRight,
   ChevronLeft,
   PhoneCall,
+  MessageCircle,
   MapPin,
   Star,
   Award,
@@ -308,7 +309,7 @@ export default function HomePage() {
     },
     {
       q: 'Can I book a package pickup directly from my home or office?',
-      a: 'Yes. You can request a pickup online or reach out via our 24/7 dispatch hotline. A dedicated courier driver will arrive at your premises, weigh and measure the package, and issue an official waybill on the spot.',
+      a: 'Yes. You can request a pickup online or message our 24/7 WhatsApp dispatch desk (+1 808 301-0314). A dedicated courier driver will arrive at your premises, weigh and measure the package, and issue an official waybill on the spot.',
     },
     {
       q: 'What international shipping corridors does VED Courier cover?',
@@ -514,11 +515,14 @@ export default function HomePage() {
                         <span>Schedule Pickup Now</span>
                       </Link>
                       <a
-                        href="tel:+18005928334"
-                        className="px-4 py-3 border border-purple-300 text-purple-800 font-bold rounded-xl text-xs hover:bg-purple-50 transition flex items-center gap-1.5 shrink-0"
+                        href="https://wa.me/18083010314"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-3 border border-emerald-300 text-emerald-800 bg-emerald-50/50 hover:bg-emerald-100 font-bold rounded-xl text-xs transition flex items-center gap-1.5 shrink-0"
+                        title="Chat with Dispatch on WhatsApp"
                       >
-                        <PhoneCall className="w-4 h-4 text-purple-700" />
-                        <span>Call Dispatch</span>
+                        <MessageCircle className="w-4 h-4 text-emerald-600" />
+                        <span>WhatsApp Dispatch</span>
                       </a>
                     </div>
                   </div>

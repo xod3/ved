@@ -20,7 +20,7 @@ const PRE_SEEDED_STAFF: Record<string, { pass: string; user: AdminUser }> = {
       email: 'admin@vedcourier.com',
       full_name: 'Chief Operations Director',
       role: 'super_admin',
-      phone: '+1 (800) 592-8334',
+      phone: '+1 (808) 301-0314',
     },
   },
   'ops@vedcourier.com': {
@@ -30,7 +30,7 @@ const PRE_SEEDED_STAFF: Record<string, { pass: string; user: AdminUser }> = {
       email: 'ops@vedcourier.com',
       full_name: 'Global Dispatch Manager',
       role: 'operations_manager',
-      phone: '+1 (800) 592-8335',
+      phone: '+1 (808) 301-0314',
     },
   },
   'support@vedcourier.com': {
@@ -40,7 +40,7 @@ const PRE_SEEDED_STAFF: Record<string, { pass: string; user: AdminUser }> = {
       email: 'support@vedcourier.com',
       full_name: 'Senior Support Officer',
       role: 'customer_support',
-      phone: '+1 (800) 592-8336',
+      phone: '+1 (808) 301-0314',
     },
   },
 };

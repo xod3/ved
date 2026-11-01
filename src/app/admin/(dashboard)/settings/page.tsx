@@ -9,8 +9,8 @@ export default function CompanySettingsPage() {
     tagline: 'FAST • SAFE • GLOBAL',
     headline: 'Your Shipment. Our Responsibility.',
     support_email: 'support@vedcourier.com',
-    support_phone: '+1 (800) 592-8334',
-    whatsapp_number: '+1 (800) 592-8334',
+    support_phone: '+1 (808) 301-0314',
+    whatsapp_number: '+1 (808) 301-0314',
     headquarters_address: '100 Global Logistics Parkway, Suite 400, New York, NY 10001, USA',
     volumetric_divisor: '5000',
     default_currency: 'USD',
@@ -136,7 +136,7 @@ export default function CompanySettingsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Support Phone Hotline</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp Support (Chat Only)</label>
               <input
                 type="text"
                 value={settings.support_phone || ''}

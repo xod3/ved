@@ -188,7 +188,7 @@ export async function initPostgresDb() {
     if (profiles[0].count === 0) {
       await sql`
         INSERT INTO profiles (id, email, password_hash, full_name, role, phone)
-        VALUES ('admin-01', 'admin@vedcourier.com', 'admin123', 'Chief Operations Director', 'super_admin', '+1 (800) 592-8334');
+        VALUES ('admin-01', 'admin@vedcourier.com', 'admin123', 'Chief Operations Director', 'super_admin', '+1 (808) 301-0314');
       `;
     }
 

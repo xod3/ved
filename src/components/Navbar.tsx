@@ -9,7 +9,7 @@ import {
   Search, 
   Menu, 
   X, 
-  PhoneCall, 
+  MessageCircle, 
   Globe, 
   Lock, 
   ShieldCheck, 
@@ -58,9 +58,15 @@ export default function Navbar() {
             </span>
           </div>
           <div className="flex items-center gap-4 text-xs">
-            <a href="tel:+18005928334" className="hover:text-white flex items-center gap-1.5 font-semibold text-white transition">
-              <PhoneCall className="w-3 h-3 text-purple-300" />
-              +1 (800) 592-8334
+            <a
+              href="https://wa.me/18083010314"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-emerald-300 flex items-center gap-1.5 font-semibold text-white transition bg-purple-900/60 hover:bg-purple-900 px-2.5 py-1 rounded-full border border-purple-500/30"
+              title="Chat with VED Courier on WhatsApp"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+              <span>WhatsApp: +1 (808) 301-0314</span>
             </a>
             <span className="text-purple-400">•</span>
             <Link href="/admin/login" className="hover:text-white flex items-center gap-1.5 text-purple-200 hover:text-white transition">
@@ -166,6 +172,16 @@ export default function Navbar() {
               );
             })}
             <div className="pt-3 border-t border-purple-100 space-y-2">
+              <a
+                href="https://wa.me/18083010314"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-xs"
+              >
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp: +1 (808) 301-0314
+              </a>
               <Link
                 href="/track"
                 onClick={() => setIsOpen(false)}

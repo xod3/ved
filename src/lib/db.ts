@@ -306,8 +306,8 @@ export function initDb() {
       ['tagline', 'FAST • SAFE • GLOBAL'],
       ['headline', 'Your Shipment. Our Responsibility.'],
       ['support_email', 'support@vedcourier.com'],
-      ['support_phone', '+1 (800) 592-8334'],
-      ['whatsapp_number', '+1 (800) 592-8334'],
+      ['support_phone', '+1 (808) 301-0314'],
+      ['whatsapp_number', '+1 (808) 301-0314'],
       ['headquarters_address', '100 Global Logistics Parkway, Suite 400, New York, NY 10001, USA'],
       ['volumetric_divisor', '5000'],
       ['default_currency', 'USD'],
@@ -327,9 +327,9 @@ export function initDb() {
       VALUES (?, ?, ?, ?, ?, ?)
     `);
     // Pre-seeded hashed password or simple verified auth for demo administrator
-    insertProfile.run('admin-01', 'admin@vedcourier.com', 'admin123', 'Chief Operations Director', 'super_admin', '+1 (800) 592-8334');
-    insertProfile.run('ops-01', 'ops@vedcourier.com', 'ops123', 'Global Dispatch Manager', 'operations_manager', '+1 (800) 592-8335');
-    insertProfile.run('support-01', 'support@vedcourier.com', 'support123', 'Senior Support Officer', 'customer_support', '+1 (800) 592-8336');
+    insertProfile.run('admin-01', 'admin@vedcourier.com', 'admin123', 'Chief Operations Director', 'super_admin', '+1 (808) 301-0314');
+    insertProfile.run('ops-01', 'ops@vedcourier.com', 'ops123', 'Global Dispatch Manager', 'operations_manager', '+1 (808) 301-0314');
+    insertProfile.run('support-01', 'support@vedcourier.com', 'support123', 'Senior Support Officer', 'customer_support', '+1 (808) 301-0314');
   }
 
   // Seed realistic international shipments if empty

@@ -43,7 +43,7 @@ export default function ContactPage() {
         setFormData({ name: '', email: '', phone: '', tracking_number: '', subject: '', message: '' });
       }
     } catch {
-      setErrorMsg('Network error. Please try again or reach out via telephone.');
+      setErrorMsg('Network error. Please try again or reach out via WhatsApp at +1 (808) 301-0314.');
     } finally {
       setLoading(false);
     }
@@ -59,20 +59,20 @@ export default function ContactPage() {
       isAddress: true,
     },
     {
-      icon: Phone,
-      label: 'Customer Support Hotline',
-      value: '+1 (800) 592-8334 (Toll-Free USA)',
-      href: 'tel:+18005928334',
-      iconBg: 'bg-purple-100',
-      iconColor: 'text-purple-700',
+      icon: MessageSquare,
+      label: 'Official WhatsApp Support Desk',
+      value: '+1 (808) 301-0314 (WhatsApp Messaging)',
+      href: 'https://wa.me/18083010314',
+      iconBg: 'bg-emerald-50',
+      iconColor: 'text-emerald-600',
     },
     {
       icon: MessageSquare,
-      label: 'WhatsApp Business Dispatch',
-      value: '+1 (800) 592-8334 (Instant Tracking Updates)',
-      href: 'https://wa.me/18005928334',
-      iconBg: 'bg-emerald-50',
-      iconColor: 'text-emerald-600',
+      label: 'WhatsApp Instant Waybill & Dispatch',
+      value: '+1 (808) 301-0314 (Instant Chat & Tracking)',
+      href: 'https://wa.me/18083010314',
+      iconBg: 'bg-emerald-100',
+      iconColor: 'text-emerald-700',
     },
     {
       icon: Mail,

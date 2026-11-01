@@ -117,15 +117,25 @@ export default function Footer() {
                 </span>
               </div>
               <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-purple-400 shrink-0" />
-                <a href="tel:+18005928334" className="text-xs text-white hover:text-purple-300 transition font-semibold">
-                  +1 (800) 592-8334 (Toll-Free)
+                <MessageSquare className="w-4 h-4 text-emerald-400 shrink-0" />
+                <a
+                  href="https://wa.me/18083010314"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-white hover:text-emerald-300 transition font-semibold"
+                >
+                  WhatsApp: +1 (808) 301-0314
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
-                <MessageSquare className="w-4 h-4 text-emerald-400 shrink-0" />
-                <a href="https://wa.me/18005928334" target="_blank" rel="noreferrer" className="text-xs text-purple-200 hover:text-white transition font-medium">
-                  WhatsApp Instant Dispatch Desk
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 ml-1.5" />
+                <a
+                  href="https://wa.me/18083010314"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-purple-200 hover:text-white transition font-medium"
+                >
+                  WhatsApp Dispatch &amp; Support (Messaging Only)
                 </a>
               </div>
               <div className="flex items-center gap-2.5">

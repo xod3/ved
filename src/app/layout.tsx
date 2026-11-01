@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 export const metadata: Metadata = {
   title: "VED COURIER LOGISTICS — International Courier, Freight & Global Tracking",
@@ -28,6 +29,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased selection:bg-[#e22026] selection:text-white">
         {children}
+        <WhatsAppButton />
       </body>
     </html>
   );
