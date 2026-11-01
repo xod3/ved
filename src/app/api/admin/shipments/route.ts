@@ -1,13 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
-import { getShipments, createShipment } from '@/lib/db';
-import { isPostgresConfigured, createPostgresShipment, getPostgresShipments } from '@/lib/postgres';
+import { getShipments, createShipment, generateNextTrackingNumber } from '@/lib/db';
+import { isPostgresConfigured, createPostgresShipment, getPostgresShipments, generateUniqueTrackingNumber } from '@/lib/postgres';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getAdminSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    }
+
+    const { searchParams } = request.nextUrl;
+
+    // Fast endpoint to generate the next guaranteed-unique real-time tracking number
+    if (searchParams.get('action') === 'next-tracking') {
+      let trackingNumber = '';
+      if (isPostgresConfigured()) {
+        try {
+          trackingNumber = await generateUniqueTrackingNumber();
+        } catch (e) {
+          console.warn('Postgres tracking generation note:', e);
+        }
+      }
+      if (!trackingNumber) {
+        try {
+          trackingNumber = generateNextTrackingNumber();
+        } catch (e) {
+          const year = new Date().getFullYear();
+          const rand = Math.floor(100100 + Math.random() * 899000);
+          trackingNumber = `VED-${year}-${rand}`;
+        }
+      }
+      return NextResponse.json({ success: true, tracking_number: trackingNumber });
     }
 
     if (isPostgresConfigured()) {
@@ -21,7 +45,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const { searchParams } = request.nextUrl;
     const search = searchParams.get('search') || undefined;
     const status = searchParams.get('status') || undefined;
     const service = searchParams.get('service') || undefined;
@@ -74,25 +97,59 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const shipmentId = shipment.id || `ship-${Date.now()}`;
+    let trackingNumber = shipment.tracking_number;
+
+    if (isPostgresConfigured()) {
+      if (!trackingNumber || !trackingNumber.trim()) {
+        trackingNumber = await generateUniqueTrackingNumber();
+      } else {
+        trackingNumber = trackingNumber.trim().toUpperCase().replace(/\s+/g, '-');
+      }
+
+      const shipmentData = {
+        ...shipment,
+        id: shipmentId,
+        tracking_number: trackingNumber,
+        created_by: session.email,
+        assigned_staff_name: session.full_name,
+        assigned_staff_id: session.id,
+      };
+
+      const pgResult = await createPostgresShipment(shipmentData, packages);
+      const finalTrackingNumber = pgResult?.tracking_number || trackingNumber;
+
+      try {
+        createShipment({ ...shipmentData, tracking_number: finalTrackingNumber }, packages);
+      } catch (sqlErr) {
+        console.warn('SQLite mirror notice:', sqlErr);
+      }
+
+      return NextResponse.json({
+        success: true,
+        id: shipmentId,
+        tracking_number: finalTrackingNumber,
+        message: 'Shipment successfully created and activated in real-time database.',
+      });
+    }
+
+    // SQLite fallback when Postgres is not configured
+    if (!trackingNumber || !trackingNumber.trim()) {
+      trackingNumber = generateNextTrackingNumber();
+    } else {
+      trackingNumber = trackingNumber.trim().toUpperCase().replace(/\s+/g, '-');
+    }
+
     const shipmentData = {
       ...shipment,
+      id: shipmentId,
+      tracking_number: trackingNumber,
       created_by: session.email,
       assigned_staff_name: session.full_name,
       assigned_staff_id: session.id,
     };
 
     const created = createShipment(shipmentData, packages);
-
-    if (isPostgresConfigured()) {
-      try {
-        await createPostgresShipment(
-          { ...shipmentData, id: created.id, tracking_number: created.tracking_number },
-          packages
-        );
-      } catch (pgErr) {
-        console.warn('Postgres save warning:', pgErr);
-      }
-    }
 
     return NextResponse.json({
       success: true,
@@ -102,7 +159,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Shipment creation error:', error);
-    return NextResponse.json({ error: 'Failed to create shipment. Please verify unique constraints.' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to create shipment. Please verify unique constraints.' }, { status: 500 });
   }
 }
 

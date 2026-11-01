@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -15,16 +15,29 @@ import {
   ShieldCheck, 
   Plane, 
   FileText,
-  DollarSign
+  DollarSign,
+  RefreshCw,
+  Copy,
+  ExternalLink,
+  QrCode,
+  Check
 } from 'lucide-react';
 
 export default function CreateShipmentPage() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [createdResult, setCreatedResult] = useState<{ id: string; tracking_number: string } | null>(null);
+  const [copiedId, setCopiedId] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState(false);
 
   // Form State
   const [shipment, setShipment] = useState({
+    tracking_number: '',
+    current_status: 'In Transit',
+    current_recorded_location: 'JFK Air Freight Cargo Terminal 4, New York',
+    initial_event_title: 'Shipment Order Created & Electronic Documentation Processed',
+    initial_event_description: 'Consignment booked and verified. Dispatch barcode issued.',
     internal_reference: '',
     booking_date: new Date().toISOString().substring(0, 10),
     estimated_delivery_date: '',
@@ -50,9 +63,9 @@ export default function CreateShipmentPage() {
     receiver_company: '',
     receiver_email: '',
     receiver_phone: '',
-    receiver_country: 'China',
-    receiver_state: 'Shanghai',
-    receiver_city: 'Shanghai',
+    receiver_country: 'United Kingdom',
+    receiver_state: 'Greater London',
+    receiver_city: 'London',
     receiver_postal_code: '',
     receiver_street: '',
     delivery_instructions: '',
@@ -61,11 +74,11 @@ export default function CreateShipmentPage() {
     origin_country: 'United States',
     origin_city: 'New York',
     origin_facility: 'JFK Air Freight Cargo Terminal 4',
-    destination_country: 'China',
-    destination_city: 'Shanghai',
-    destination_facility: 'Shanghai Pudong Airport Customs Logistics Center',
+    destination_country: 'United Kingdom',
+    destination_city: 'London',
+    destination_facility: 'Heathrow World Cargo Centre (LHR)',
     transit_hubs: '',
-    shipping_route: 'United States → China',
+    shipping_route: 'United States → United Kingdom',
 
     // Customs & Compliance
     hs_code: '8471.80.10',
@@ -88,6 +101,47 @@ export default function CreateShipmentPage() {
     customer_notes: '',
     internal_notes: '',
   });
+
+  // Load next live tracking ID on mount
+  const fetchNextTrackingId = async () => {
+    try {
+      const res = await fetch('/api/admin/shipments?action=next-tracking');
+      const data = await res.json();
+      if (data.success && data.tracking_number) {
+        setShipment((prev) => ({
+          ...prev,
+          tracking_number: data.tracking_number,
+        }));
+      }
+    } catch (err) {
+      console.warn('Could not auto-fetch next tracking ID:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchNextTrackingId();
+  }, []);
+
+  const handleGenerateNewTracking = async () => {
+    try {
+      const res = await fetch('/api/admin/shipments?action=next-tracking');
+      const data = await res.json();
+      if (data.success && data.tracking_number) {
+        setShipment((prev) => ({
+          ...prev,
+          tracking_number: data.tracking_number,
+        }));
+      } else {
+        const year = new Date().getFullYear();
+        const rand = Math.floor(100100 + Math.random() * 899000);
+        setShipment((prev) => ({ ...prev, tracking_number: `VED-${year}-${rand}` }));
+      }
+    } catch {
+      const year = new Date().getFullYear();
+      const rand = Math.floor(100100 + Math.random() * 899000);
+      setShipment((prev) => ({ ...prev, tracking_number: `VED-${year}-${rand}` }));
+    }
+  };
 
   // Multi-package state
   const [packages, setPackages] = useState<any[]>([
@@ -195,12 +249,35 @@ export default function CreateShipmentPage() {
         setErrorMsg(data.error || 'Failed to create shipment.');
         setSubmitting(false);
       } else {
-        router.push(`/admin/shipments/${data.id}?created=true&tracking=${data.tracking_number}`);
+        setCreatedResult({
+          id: data.id,
+          tracking_number: data.tracking_number,
+        });
+        setSubmitting(false);
       }
     } catch {
       setErrorMsg('Network error. Check database availability.');
       setSubmitting(false);
     }
+  };
+
+  const copyTrackingId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2000);
+  };
+
+  const copyCustomerUrl = (id: string) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.vedcourier.online';
+    const url = `${origin}/track?id=${encodeURIComponent(id)}`;
+    navigator.clipboard.writeText(url);
+    setCopiedUrl(true);
+    setTimeout(() => setCopiedUrl(false), 2000);
+  };
+
+  const resetFormForNext = () => {
+    setCreatedResult(null);
+    fetchNextTrackingId();
   };
 
   return (
@@ -216,13 +293,101 @@ export default function CreateShipmentPage() {
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Registry
           </Link>
           <h1 className="text-2xl sm:text-3xl font-black text-[#0b2240] tracking-tight">
-            Create New International Shipment
+            Create Real-Time Shipment &amp; Customer Tracking ID
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Backend will automatically generate a secure sequential tracking ID (e.g., <code className="font-mono bg-slate-100 px-1 py-0.5 rounded">VED-2026-XXXXXX</code>) and register the initial dispatch milestone.
+            Create and activate a live tracking ID that is immediately queryable on the public frontend tracking page.
           </p>
         </div>
       </div>
+
+      {/* Success Modal / Banner */}
+      {createdResult && (
+        <div className="p-6 sm:p-8 bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 text-white rounded-3xl shadow-2xl border-2 border-emerald-400/50 space-y-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-emerald-400 text-emerald-950 rounded-2xl flex items-center justify-center shrink-0 shadow-lg">
+              <CheckCircle2 className="w-7 h-7" />
+            </div>
+            <div className="space-y-1">
+              <span className="inline-block px-3 py-1 bg-emerald-400/20 text-emerald-300 text-xs font-bold rounded-full border border-emerald-400/40">
+                Live &amp; Activated in Database
+              </span>
+              <h2 className="text-2xl font-black text-white">
+                Customer Tracking ID Created!
+              </h2>
+              <p className="text-xs text-emerald-100 max-w-xl">
+                This tracking number is now live and synchronized with the frontend. Your customer can immediately track this shipment by entering the code below on the homepage or track page.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-emerald-950/80 p-4 sm:p-6 rounded-2xl border border-emerald-600/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 block mb-0.5">
+                Active Tracking Number
+              </span>
+              <span className="text-2xl sm:text-3xl font-black font-mono tracking-wider text-white">
+                {createdResult.tracking_number}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => copyTrackingId(createdResult.tracking_number)}
+                className="bg-white text-emerald-950 hover:bg-emerald-50 px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                {copiedId ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                {copiedId ? 'Copied ID!' : 'Copy Tracking ID'}
+              </button>
+              <button
+                type="button"
+                onClick={() => copyCustomerUrl(createdResult.tracking_number)}
+                className="bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-emerald-500 cursor-pointer"
+              >
+                {copiedUrl ? <Check className="w-4 h-4" /> : <ExternalLink className="w-4 h-4" />}
+                {copiedUrl ? 'Copied Link!' : 'Copy Direct Customer Link'}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-emerald-700/60 text-xs">
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/track?id=${encodeURIComponent(createdResult.tracking_number)}`}
+                target="_blank"
+                className="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Test Customer Tracking View
+              </Link>
+              <Link
+                href={`/admin/shipments/${createdResult.id}/label`}
+                target="_blank"
+                className="bg-emerald-800/80 hover:bg-emerald-800 text-white px-3.5 py-2.5 rounded-xl font-bold transition flex items-center gap-1.5 border border-emerald-600"
+              >
+                <QrCode className="w-4 h-4" />
+                Print Label
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={resetFormForNext}
+                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl font-bold transition cursor-pointer"
+              >
+                + Create Another Tracking ID
+              </button>
+              <Link
+                href={`/admin/shipments/${createdResult.id}`}
+                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl font-bold transition"
+              >
+                View in Admin
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {errorMsg && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-xs text-red-800 flex items-start gap-2.5">
@@ -236,6 +401,83 @@ export default function CreateShipmentPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         
+        {/* ─── REAL-TIME TRACKING ID ACTIVATION CARD ─── */}
+        <div className="bg-gradient-to-r from-purple-900 via-[#2e0854] to-purple-950 p-6 sm:p-8 rounded-3xl text-white shadow-xl border-2 border-purple-500/40 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full text-xs font-bold uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                Real-Time Customer Tracking ID
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
+                Consignment Waybill Identification
+              </h2>
+              <p className="text-xs text-purple-200 mt-1 max-w-xl leading-relaxed">
+                This Tracking ID is immediately activated upon creation. Customers can paste or type it directly into the website tracking form on the homepage and track page to view real-time transit status, packages, and milestones.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleGenerateNewTracking}
+              className="bg-white/10 hover:bg-white/20 text-purple-100 hover:text-white px-4 py-2.5 rounded-xl text-xs font-bold border border-white/20 transition flex items-center gap-2 shrink-0 cursor-pointer"
+            >
+              <RefreshCw className="w-4 h-4 text-purple-300" />
+              Generate Next Sequence ID
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <div className="md:col-span-7">
+              <label className="block text-xs font-bold text-purple-200 mb-1.5">
+                Active Tracking / Waybill Number (Customizable)
+              </label>
+              <div className="relative">
+                <Package className="w-5 h-5 text-purple-300 absolute left-4 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={shipment.tracking_number}
+                  onChange={(e) => setShipment({ ...shipment, tracking_number: e.target.value.toUpperCase() })}
+                  placeholder="e.g. VED-2026-000108"
+                  className="w-full pl-12 pr-4 py-3.5 bg-white text-slate-900 rounded-xl font-mono font-black text-lg sm:text-xl tracking-wider focus:outline-hidden focus:ring-4 focus:ring-purple-400 shadow-md"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="md:col-span-5">
+              <label className="block text-xs font-bold text-purple-200 mb-1.5">
+                Initial Live Status for Consignee
+              </label>
+              <select
+                value={shipment.current_status}
+                onChange={(e) => setShipment({ ...shipment, current_status: e.target.value })}
+                className="w-full px-4 py-3.5 bg-purple-950/90 text-white border border-purple-400/40 rounded-xl text-sm font-bold focus:outline-hidden focus:ring-2 focus:ring-purple-400"
+              >
+                <option value="Shipment Created">Shipment Created / Intake Booked</option>
+                <option value="In Transit">In Transit (Air / Linehaul)</option>
+                <option value="Departed Origin">Departed Origin Gateway</option>
+                <option value="Arrived at Transit Hub">Arrived at Transit Hub</option>
+                <option value="Customs Clearance">Customs Clearance Inspection</option>
+                <option value="Customs Cleared">Customs Cleared &amp; Released</option>
+                <option value="Out for Delivery">Out for Delivery (Final Mile)</option>
+                <option value="Delivered">Delivered (Completed)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Realtime link preview */}
+          {shipment.tracking_number && (
+            <div className="p-3 bg-purple-950/60 rounded-xl border border-purple-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <span className="text-purple-300">
+                Customer Tracking URL Preview: <code className="text-white font-mono font-bold">https://www.vedcourier.online/track?id={shipment.tracking_number.trim().toUpperCase()}</code>
+              </span>
+              <span className="text-emerald-400 font-bold flex items-center gap-1 shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Ready for Realtime Query
+              </span>
+            </div>
+          )}
+        </div>
+
         {/* Section 1: Route & Transit Configuration */}
         <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-2xs border border-slate-200 space-y-6">
           <h2 className="text-base font-extrabold text-[#0b2240] flex items-center gap-2 border-b border-slate-100 pb-3">
@@ -948,17 +1190,17 @@ export default function CreateShipmentPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="px-8 py-3 bg-[#e22026] hover:bg-[#b81419] disabled:opacity-70 text-white rounded-xl text-sm font-bold shadow-md transition flex items-center gap-2 cursor-pointer"
+              className="px-8 py-3.5 bg-gradient-to-r from-purple-700 via-purple-800 to-[#2e0854] hover:from-purple-800 hover:to-purple-950 disabled:opacity-70 text-white rounded-xl text-sm font-black shadow-lg transition flex items-center gap-2 cursor-pointer active:scale-95"
             >
               {submitting ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Registering Shipment...</span>
+                  <span>Activating Realtime Tracking...</span>
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4" />
-                  <span>Generate Tracking ID & Save</span>
+                  <span>Activate Realtime Tracking ID: {shipment.tracking_number || 'Auto-Generate'}</span>
                 </>
               )}
             </button>

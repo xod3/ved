@@ -417,13 +417,72 @@ async function seedPostgresShipments(sql: any) {
   }
 }
 
+export async function generateUniqueTrackingNumber(requested?: string): Promise<string> {
+  const sql = getSql();
+  const year = new Date().getFullYear();
+
+  if (requested && requested.trim()) {
+    const clean = requested.trim().toUpperCase().replace(/\s+/g, '-');
+    if (sql) {
+      try {
+        const rows = await sql`SELECT id FROM shipments WHERE tracking_number = ${clean} LIMIT 1;`;
+        if (rows.length === 0) return clean;
+        const suffix = Math.floor(1000 + Math.random() * 9000);
+        return `${clean}-${suffix}`;
+      } catch {
+        return clean;
+      }
+    }
+    return clean;
+  }
+
+  if (sql) {
+    try {
+      const rows = await sql`
+        SELECT tracking_number FROM shipments
+        WHERE tracking_number LIKE ${`VED-${year}-%`}
+        ORDER BY tracking_number DESC
+        LIMIT 50;
+      `;
+      let maxNum = 106;
+      if (rows && rows.length > 0) {
+        for (const r of rows) {
+          const m = String(r.tracking_number).match(/VED-\d{4}-(\d+)/);
+          if (m) {
+            const val = parseInt(m[1], 10);
+            if (val > maxNum) maxNum = val;
+          }
+        }
+      }
+      const next = maxNum + 1;
+      return `VED-${year}-${String(next).padStart(6, '0')}`;
+    } catch (err) {
+      console.warn('Error fetching highest tracking sequence in Postgres:', err);
+    }
+  }
+
+  const randomSuffix = Math.floor(100100 + Math.random() * 899000);
+  return `VED-${year}-${randomSuffix}`;
+}
+
 export async function createPostgresShipment(data: any, packages: any[]) {
   const sql = getSql();
   if (!sql) return null;
   await initPostgresDb();
 
   const shipmentId = data.id || `ship-${Date.now()}`;
-  const trackingNumber = data.tracking_number;
+  let trackingNumber = data.tracking_number;
+  if (!trackingNumber || !trackingNumber.trim()) {
+    trackingNumber = await generateUniqueTrackingNumber();
+  } else {
+    trackingNumber = trackingNumber.trim().toUpperCase().replace(/\s+/g, '-');
+    // Ensure uniqueness
+    const existing = await sql`SELECT id FROM shipments WHERE tracking_number = ${trackingNumber} LIMIT 1;`;
+    if (existing.length > 0 && existing[0].id !== shipmentId) {
+      const suffix = Math.floor(1000 + Math.random() * 9000);
+      trackingNumber = `${trackingNumber}-${suffix}`;
+    }
+  }
 
   let totalActualWeight = 0;
   let totalVolumetricWeight = 0;
@@ -437,6 +496,9 @@ export async function createPostgresShipment(data: any, packages: any[]) {
 
   const chargeableWeight = Math.max(totalActualWeight, totalVolumetricWeight);
   const totalCharge = (Number(data.shipping_fee || 0) + Number(data.handling_fee || 0) + Number(data.insurance_fee || 0) + Number(data.customs_charges || 0)) - Number(data.discount || 0);
+
+  const initialStatus = data.current_status || 'Shipment Created';
+  const initialLocation = data.current_recorded_location || `${data.origin_facility || data.origin_city}, ${data.origin_country}`;
 
   await sql`
     INSERT INTO shipments (
@@ -453,12 +515,16 @@ export async function createPostgresShipment(data: any, packages: any[]) {
       ${data.sender_name}, ${data.sender_company || null}, ${data.sender_email || null}, ${data.sender_phone || null}, ${data.sender_country}, ${data.sender_state || null}, ${data.sender_city}, ${data.sender_postal_code || null}, ${data.sender_street}, ${data.sender_pickup_address || null},
       ${data.receiver_name}, ${data.receiver_company || null}, ${data.receiver_email || null}, ${data.receiver_phone || null}, ${data.receiver_country}, ${data.receiver_state || null}, ${data.receiver_city}, ${data.receiver_postal_code || null}, ${data.receiver_street}, ${data.delivery_instructions || null},
       ${data.origin_country}, ${data.origin_city}, ${data.origin_facility || `${data.origin_city} Logistics Hub`}, ${data.destination_country}, ${data.destination_city}, ${data.destination_facility || `${data.destination_city} Central Delivery Depot`}, ${data.transit_hubs || null}, ${data.shipping_route || `${data.origin_country} → ${data.destination_country}`}, ${data.transport_mode || 'Air Freight'}, ${data.service_type || 'Express Courier'}, ${data.carrier_partner || 'VED Courier Global Line'}, ${data.flight_vessel_reference || null},
-      'Shipment Created', ${`${data.origin_facility || data.origin_city}, ${data.origin_country}`},
+      ${initialStatus}, ${initialLocation},
       ${totalActualWeight}, ${data.weight_unit || 'kg'}, ${Number(totalVolumetricWeight.toFixed(2))}, ${Number(chargeableWeight.toFixed(2))},
       ${Number(data.declared_value || 0)}, ${data.currency || 'USD'}, ${Number(data.shipping_fee || 0)}, ${Number(data.handling_fee || 0)}, ${Number(data.insurance_fee || 0)}, ${Number(data.customs_charges || 0)}, ${Number(data.discount || 0)}, ${Number(totalCharge.toFixed(2))}, ${Number(data.amount_paid || 0)}, ${data.payment_status || 'Pending'}, ${data.payment_method || 'Bank Transfer'},
       ${data.customer_notes || null}, ${data.internal_notes || null}, ${data.assigned_staff_name || 'Staff Dispatch'}, ${data.assigned_staff_id || 'admin-01'}, ${data.created_by || 'admin@vedcourier.com'}
     )
-    ON CONFLICT (id) DO NOTHING;
+    ON CONFLICT (id) DO UPDATE SET
+      tracking_number = EXCLUDED.tracking_number,
+      current_status = EXCLUDED.current_status,
+      current_recorded_location = EXCLUDED.current_recorded_location,
+      last_updated_at = NOW();
   `;
 
   // Insert packages
@@ -479,11 +545,16 @@ export async function createPostgresShipment(data: any, packages: any[]) {
 
   // Insert initial tracking event
   const evtId = `evt-${Date.now()}`;
+  const evtTitle = data.initial_event_title || `Shipment ${initialStatus}`;
+  const evtDesc = data.initial_event_description || `Consignment registered in dispatch system with real-time tracking. Active at ${initialLocation}.`;
+
   await sql`
     INSERT INTO tracking_events (
       id, shipment_id, status, event_title, event_description, location_name, city, country, facility_name, is_public, created_by
     ) VALUES (
-      ${evtId}, ${shipmentId}, 'Shipment Created', 'Shipment Order Created & Electronic Documentation Processed', 'Shipping order registered in system. Consignment preparing for facility dispatch.', ${`${data.origin_facility || data.origin_city}`}, ${data.origin_city}, ${data.origin_country}, ${data.origin_facility || `${data.origin_city} Intake Facility`}, 1, ${data.created_by || 'admin@vedcourier.com'}
+      ${evtId}, ${shipmentId}, ${initialStatus}, ${evtTitle}, ${evtDesc},
+      ${data.origin_facility || data.origin_city}, ${data.origin_city}, ${data.origin_country},
+      ${data.origin_facility || `${data.origin_city} Intake Facility`}, 1, ${data.created_by || 'admin@vedcourier.com'}
     )
     ON CONFLICT (id) DO NOTHING;
   `;

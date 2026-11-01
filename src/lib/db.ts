@@ -1244,8 +1244,8 @@ export function getShipmentById(id: string) {
 
 export function createShipment(data: any, packages: any[]) {
   initDb();
-  const trackingNumber = generateNextTrackingNumber();
-  const shipmentId = `ship-${Date.now()}`;
+  const trackingNumber = data.tracking_number || generateNextTrackingNumber();
+  const shipmentId = data.id || `ship-${Date.now()}`;
   const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
   // Calculate totals
