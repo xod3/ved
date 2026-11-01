@@ -129,13 +129,6 @@ export default function HomePage() {
     router.push(`/track?id=${encodeURIComponent(clean)}`);
   };
 
-  const sampleWaybills = [
-    { label: 'US → China', id: 'VED-2026-000101' },
-    { label: 'China → UK', id: 'VED-2026-000102' },
-    { label: 'US → UK', id: 'VED-2026-000103' },
-    { label: 'Korea → US', id: 'VED-2026-000104' },
-  ];
-
   // Rate calculation formula
   const getRateEstimate = () => {
     const rate = calcMode === 'express' ? 16.5 : calcMode === 'air' ? 10.8 : 4.5;
@@ -422,19 +415,11 @@ export default function HomePage() {
                       </button>
                     </form>
 
-                    {/* Instant Demo Chips */}
-                    <div className="flex items-center gap-2 flex-wrap text-xs pt-1">
-                      <span className="text-slate-500 font-bold text-[11px]">Active Waybills:</span>
-                      {sampleWaybills.map((s) => (
-                        <button
-                          key={s.id}
-                          type="button"
-                          onClick={() => router.push(`/track?id=${s.id}`)}
-                          className="bg-purple-50 hover:bg-purple-100 text-purple-900 px-2.5 py-1 rounded-md text-[11px] font-mono font-semibold transition border border-purple-200 cursor-pointer"
-                        >
-                          {s.id}
-                        </button>
-                      ))}
+                    {/* Official Format Helper */}
+                    <div className="flex items-center gap-2 flex-wrap text-xs pt-1 text-slate-500">
+                      <span className="font-semibold text-[11px]">Official Format:</span>
+                      <span className="font-mono font-bold text-purple-900 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 text-[11px]">VED-2026-XXXXXX</span>
+                      <span className="text-[11px] text-slate-400">• Real-time multi-carrier tracking</span>
                     </div>
                   </div>
                 )}

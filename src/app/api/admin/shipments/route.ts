@@ -34,21 +34,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, tracking_number: trackingNumber });
     }
 
+    const search = searchParams.get('search') || undefined;
+    const status = searchParams.get('status') || undefined;
+    const service = searchParams.get('service') || undefined;
+    const route = searchParams.get('route') || undefined;
+
     if (isPostgresConfigured()) {
       try {
-        const pgShipments = await getPostgresShipments();
-        if (pgShipments && pgShipments.length > 0) {
+        const pgShipments = await getPostgresShipments({ search, status, service, route });
+        if (pgShipments !== null) {
           return NextResponse.json({ success: true, shipments: pgShipments });
         }
       } catch (pgErr) {
         console.warn('Postgres GET shipments warning:', pgErr);
       }
     }
-
-    const search = searchParams.get('search') || undefined;
-    const status = searchParams.get('status') || undefined;
-    const service = searchParams.get('service') || undefined;
-    const route = searchParams.get('route') || undefined;
 
     const shipments = getShipments({ search, status, service, route });
     return NextResponse.json({ success: true, shipments });
@@ -98,15 +98,22 @@ export async function POST(request: NextRequest) {
     }
 
     const shipmentId = shipment.id || `ship-${Date.now()}`;
-    let trackingNumber = shipment.tracking_number;
+    const year = new Date().getFullYear();
+    let trackingNumber = (shipment.tracking_number || '').trim().toUpperCase().replace(/\s+/g, '-').replace(/_+/g, '-');
+
+    if (trackingNumber.includes('MOLESTIAS') || trackingNumber.includes('IPSUM') || trackingNumber.includes('QUO')) {
+      trackingNumber = '';
+    }
+
+    if (!trackingNumber || !trackingNumber.startsWith('VED-')) {
+      if (trackingNumber) {
+        trackingNumber = `VED-${year}-${trackingNumber.replace(/[^A-Z0-9]/g, '')}`;
+      } else {
+        trackingNumber = isPostgresConfigured() ? await generateUniqueTrackingNumber() : generateNextTrackingNumber();
+      }
+    }
 
     if (isPostgresConfigured()) {
-      if (!trackingNumber || !trackingNumber.trim()) {
-        trackingNumber = await generateUniqueTrackingNumber();
-      } else {
-        trackingNumber = trackingNumber.trim().toUpperCase().replace(/\s+/g, '-');
-      }
-
       const shipmentData = {
         ...shipment,
         id: shipmentId,
@@ -131,13 +138,6 @@ export async function POST(request: NextRequest) {
         tracking_number: finalTrackingNumber,
         message: 'Shipment successfully created and activated in real-time database.',
       });
-    }
-
-    // SQLite fallback when Postgres is not configured
-    if (!trackingNumber || !trackingNumber.trim()) {
-      trackingNumber = generateNextTrackingNumber();
-    } else {
-      trackingNumber = trackingNumber.trim().toUpperCase().replace(/\s+/g, '-');
     }
 
     const shipmentData = {

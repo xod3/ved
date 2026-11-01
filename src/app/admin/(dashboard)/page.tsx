@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { getDashboardMetrics } from '@/lib/db';
+import { isPostgresConfigured, getPostgresDashboardMetrics } from '@/lib/postgres';
 import { 
   Package, 
   Truck, 
@@ -17,8 +18,23 @@ import {
   Activity
 } from 'lucide-react';
 
-export default function AdminDashboardPage() {
-  const metrics = getDashboardMetrics();
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default async function AdminDashboardPage() {
+  let metrics: any = null;
+
+  if (isPostgresConfigured()) {
+    try {
+      metrics = await getPostgresDashboardMetrics();
+    } catch (err) {
+      console.warn('Postgres dashboard metrics error:', err);
+    }
+  }
+
+  if (!metrics) {
+    metrics = getDashboardMetrics();
+  }
 
   const kpis = [
     {

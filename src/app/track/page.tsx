@@ -25,11 +25,16 @@ function TrackContent() {
 
   const performLookup = async (id: string) => {
     if (!id.trim()) return;
+    const cleanId = id.trim().toUpperCase().replace(/\s+/g, '-').replace(/_+/g, '-');
+    if (cleanId.includes('MOLESTIAS') || cleanId.includes('IPSUM') || cleanId === 'QUO') {
+      setError('Invalid tracking number. Official VED tracking numbers start with VED- (e.g. VED-2026-000102).');
+      return;
+    }
     setLoading(true);
     setError(null);
     setShipment(null);
     try {
-      const res = await fetch(`/api/track?id=${encodeURIComponent(id.trim())}`);
+      const res = await fetch(`/api/track?id=${encodeURIComponent(cleanId)}`);
       const data = await res.json();
       if (!res.ok) setError(data.error || 'Unable to locate tracking record.');
       else setShipment(data.shipment);
@@ -89,13 +94,6 @@ function TrackContent() {
     if (s.includes('delayed') || s.includes('exception') || s.includes('hold')) return 'bg-red-100 text-red-800 border-red-300';
     return 'bg-purple-100 text-purple-900 border-purple-300 font-bold';
   };
-
-  const demoNumbers = [
-    { id: 'VED-2026-000101', label: 'US → China (Customs Cleared)' },
-    { id: 'VED-2026-000102', label: 'China → United Kingdom (In Transit)' },
-    { id: 'VED-2026-000103', label: 'US → United Kingdom (Out for Delivery)' },
-    { id: 'VED-2026-000104', label: 'Korea → US (Delivered)' },
-  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -158,23 +156,10 @@ function TrackContent() {
             </button>
           </form>
 
-          {/* Quick Demo Waybills */}
+          {/* Official Format Helper */}
           <div className="pt-2 flex items-center gap-2 flex-wrap text-xs text-purple-200">
-            <span className="text-purple-300 font-bold">Sample Waybills:</span>
-            {demoNumbers.map((d) => (
-              <button
-                key={d.id}
-                type="button"
-                onClick={() => {
-                  setInputVal(d.id);
-                  router.push(`/track?id=${d.id}`);
-                  performLookup(d.id);
-                }}
-                className="bg-purple-950/80 hover:bg-purple-900 text-purple-100 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold border border-purple-700/60 transition cursor-pointer"
-              >
-                {d.id} <span className="text-purple-300">({d.label.split('(')[0]})</span>
-              </button>
-            ))}
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Official Tracking Format: <strong className="font-mono text-white">VED-YYYY-XXXXXX</strong> (as printed on your dispatch waybill or booking receipt)</span>
           </div>
         </div>
       </section>

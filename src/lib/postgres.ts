@@ -218,6 +218,39 @@ export async function initPostgresDb() {
       `;
     }
 
+    // Purge rogue / placeholder test tracking IDs (e.g. QUO-MOLESTIAS-IPSUM or anything not following VED format)
+    try {
+      await sql`
+        DELETE FROM tracking_events
+        WHERE shipment_id IN (
+          SELECT id FROM shipments 
+          WHERE tracking_number NOT LIKE 'VED-%'
+             OR UPPER(tracking_number) LIKE '%MOLESTIAS%'
+             OR UPPER(tracking_number) LIKE '%QUO%'
+             OR UPPER(tracking_number) LIKE '%IPSUM%'
+        );
+      `;
+      await sql`
+        DELETE FROM shipment_packages
+        WHERE shipment_id IN (
+          SELECT id FROM shipments 
+          WHERE tracking_number NOT LIKE 'VED-%'
+             OR UPPER(tracking_number) LIKE '%MOLESTIAS%'
+             OR UPPER(tracking_number) LIKE '%QUO%'
+             OR UPPER(tracking_number) LIKE '%IPSUM%'
+        );
+      `;
+      await sql`
+        DELETE FROM shipments
+        WHERE tracking_number NOT LIKE 'VED-%'
+           OR UPPER(tracking_number) LIKE '%MOLESTIAS%'
+           OR UPPER(tracking_number) LIKE '%QUO%'
+           OR UPPER(tracking_number) LIKE '%IPSUM%';
+      `;
+    } catch (purgeErr) {
+      console.warn('Postgres cleanup notice:', purgeErr);
+    }
+
     tablesInitialized = true;
     console.log('Postgres/Neon tables ready.');
   } catch (err) {
@@ -422,7 +455,10 @@ export async function generateUniqueTrackingNumber(requested?: string): Promise<
   const year = new Date().getFullYear();
 
   if (requested && requested.trim()) {
-    const clean = requested.trim().toUpperCase().replace(/\s+/g, '-');
+    let clean = requested.trim().toUpperCase().replace(/\s+/g, '-').replace(/_+/g, '-');
+    if (!clean.startsWith('VED-')) {
+      clean = `VED-${year}-${clean.replace(/[^A-Z0-9]/g, '')}`;
+    }
     if (sql) {
       try {
         const rows = await sql`SELECT id FROM shipments WHERE tracking_number = ${clean} LIMIT 1;`;
@@ -471,17 +507,22 @@ export async function createPostgresShipment(data: any, packages: any[]) {
   await initPostgresDb();
 
   const shipmentId = data.id || `ship-${Date.now()}`;
-  let trackingNumber = data.tracking_number;
-  if (!trackingNumber || !trackingNumber.trim()) {
-    trackingNumber = await generateUniqueTrackingNumber();
-  } else {
-    trackingNumber = trackingNumber.trim().toUpperCase().replace(/\s+/g, '-');
-    // Ensure uniqueness
-    const existing = await sql`SELECT id FROM shipments WHERE tracking_number = ${trackingNumber} LIMIT 1;`;
-    if (existing.length > 0 && existing[0].id !== shipmentId) {
-      const suffix = Math.floor(1000 + Math.random() * 9000);
-      trackingNumber = `${trackingNumber}-${suffix}`;
+  const year = new Date().getFullYear();
+  let trackingNumber = (data.tracking_number || '').trim().toUpperCase().replace(/\s+/g, '-');
+  
+  if (!trackingNumber || !trackingNumber.startsWith('VED-')) {
+    if (trackingNumber) {
+      trackingNumber = `VED-${year}-${trackingNumber.replace(/[^A-Z0-9]/g, '')}`;
+    } else {
+      trackingNumber = await generateUniqueTrackingNumber();
     }
+  }
+
+  // Ensure uniqueness
+  const existing = await sql`SELECT id FROM shipments WHERE tracking_number = ${trackingNumber} LIMIT 1;`;
+  if (existing && existing.length > 0 && existing[0].id !== shipmentId) {
+    const suffix = Math.floor(1000 + Math.random() * 9000);
+    trackingNumber = `${trackingNumber}-${suffix}`;
   }
 
   let totalActualWeight = 0;
@@ -569,6 +610,9 @@ export async function getPostgresShipmentById(idOrTracking: string) {
 
   const raw = (idOrTracking || '').trim();
   const normalized = raw.toUpperCase().replace(/\s+/g, '-').replace(/_+/g, '-');
+  if (normalized.includes('MOLESTIAS') || normalized.includes('IPSUM')) {
+    return null;
+  }
   const alphanumeric = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
 
   const shipments = await sql`
@@ -593,15 +637,173 @@ export async function getPostgresShipmentById(idOrTracking: string) {
   };
 }
 
-export async function getPostgresShipments() {
+export async function getPostgresShipments(filter?: { search?: string; status?: string; service?: string; route?: string }) {
   const sql = getSql();
   if (!sql) return null;
   await initPostgresDb();
 
-  const shipments = await sql`
-    SELECT * FROM shipments ORDER BY created_at DESC LIMIT 100;
+  const rows = await sql`
+    SELECT * FROM shipments 
+    WHERE tracking_number LIKE 'VED-%'
+    ORDER BY created_at DESC 
+    LIMIT 250;
   `;
-  return shipments || [];
+  if (!rows) return [];
+  let results = rows.filter((s: any) => s.tracking_number && s.tracking_number.startsWith('VED-'));
+
+  if (filter?.search) {
+    const q = filter.search.toLowerCase();
+    results = results.filter((s: any) =>
+      (s.tracking_number && s.tracking_number.toLowerCase().includes(q)) ||
+      (s.sender_name && s.sender_name.toLowerCase().includes(q)) ||
+      (s.receiver_name && s.receiver_name.toLowerCase().includes(q)) ||
+      (s.shipping_route && s.shipping_route.toLowerCase().includes(q)) ||
+      (s.destination_city && s.destination_city.toLowerCase().includes(q))
+    );
+  }
+  if (filter?.status && filter.status !== 'all') {
+    results = results.filter((s: any) => s.current_status && s.current_status.toLowerCase() === filter.status!.toLowerCase());
+  }
+  if (filter?.service && filter.service !== 'all') {
+    results = results.filter((s: any) => s.service_type && s.service_type.toLowerCase() === filter.service!.toLowerCase());
+  }
+  if (filter?.route && filter.route !== 'all') {
+    results = results.filter((s: any) => s.shipping_route && s.shipping_route.toLowerCase().includes(filter.route!.toLowerCase()));
+  }
+  return results;
+}
+
+export async function getPostgresDashboardMetrics() {
+  const sql = getSql();
+  if (!sql) return null;
+  await initPostgresDb();
+
+  const rows = await sql`
+    SELECT * FROM shipments 
+    WHERE tracking_number LIKE 'VED-%'
+    ORDER BY created_at DESC;
+  `;
+
+  const allShipments = (rows || []).filter((s: any) => s.tracking_number && s.tracking_number.startsWith('VED-'));
+  const totalShipments = allShipments.length;
+
+  const inTransit = allShipments.filter((s: any) => 
+    ['In Transit', 'Departed Origin', 'Arrived at Transit Hub'].includes(s.current_status)
+  ).length;
+
+  const customs = allShipments.filter((s: any) => 
+    ['Customs Clearance', 'Customs Hold', 'Customs Cleared'].includes(s.current_status)
+  ).length;
+
+  const outForDelivery = allShipments.filter((s: any) => 
+    ['Out for Delivery', 'Arrived at Local Facility'].includes(s.current_status)
+  ).length;
+
+  const delivered = allShipments.filter((s: any) => 
+    s.current_status === 'Delivered'
+  ).length;
+
+  const delayed = allShipments.filter((s: any) => 
+    ['Delayed', 'Delivery Exception', 'Customs Hold'].includes(s.current_status)
+  ).length;
+
+  const awaitingPickup = allShipments.filter((s: any) => 
+    ['Shipment Created', 'Awaiting Pickup'].includes(s.current_status)
+  ).length;
+
+  let openTickets = 0;
+  try {
+    const tickets = await sql`SELECT count(*)::int as count FROM support_tickets WHERE status != 'resolved' AND status != 'closed';`;
+    openTickets = tickets[0]?.count || 0;
+  } catch {}
+
+  const recentShipments = allShipments.slice(0, 8);
+
+  let recentEvents: any[] = [];
+  try {
+    const evts = await sql`
+      SELECT e.*, s.tracking_number, s.shipping_route
+      FROM tracking_events e
+      JOIN shipments s ON e.shipment_id = s.id
+      WHERE s.tracking_number LIKE 'VED-%'
+      ORDER BY e.recorded_at DESC 
+      LIMIT 6;
+    `;
+    recentEvents = evts || [];
+  } catch {}
+
+  return {
+    totalShipments,
+    inTransit,
+    customs,
+    outForDelivery,
+    delivered,
+    delayed,
+    awaitingPickup,
+    openTickets,
+    recentShipments,
+    recentEvents,
+  };
+}
+
+export async function getPostgresReportsData() {
+  const sql = getSql();
+  if (!sql) return null;
+  await initPostgresDb();
+
+  const rows = await sql`
+    SELECT * FROM shipments 
+    WHERE tracking_number LIKE 'VED-%';
+  `;
+  const all = (rows || []).filter((s: any) => s.tracking_number && s.tracking_number.startsWith('VED-'));
+
+  const routeMap: Record<string, { count: number; total_weight: number; total_revenue: number }> = {};
+  const statusMap: Record<string, number> = {};
+  const serviceMap: Record<string, number> = {};
+  let totalRevenue = 0;
+  let totalWeight = 0;
+
+  for (const s of all) {
+    const route = s.shipping_route || 'Other Corridors';
+    if (!routeMap[route]) routeMap[route] = { count: 0, total_weight: 0, total_revenue: 0 };
+    routeMap[route].count += 1;
+    routeMap[route].total_weight += Number(s.total_actual_weight || 0);
+    routeMap[route].total_revenue += Number(s.total_charge || 0);
+
+    const status = s.current_status || 'Unknown';
+    statusMap[status] = (statusMap[status] || 0) + 1;
+
+    const service = s.service_type || 'Standard';
+    serviceMap[service] = (serviceMap[service] || 0) + 1;
+
+    totalRevenue += Number(s.total_charge || 0);
+    totalWeight += Number(s.total_actual_weight || 0);
+  }
+
+  const routeStats = Object.entries(routeMap).map(([shipping_route, data]) => ({
+    shipping_route,
+    count: data.count,
+    total_weight: data.total_weight,
+    total_revenue: data.total_revenue,
+  })).sort((a, b) => b.count - a.count);
+
+  const statusStats = Object.entries(statusMap).map(([current_status, count]) => ({
+    current_status,
+    count,
+  })).sort((a, b) => b.count - a.count);
+
+  const serviceStats = Object.entries(serviceMap).map(([service_type, count]) => ({
+    service_type,
+    count,
+  })).sort((a, b) => b.count - a.count);
+
+  return {
+    routeStats,
+    statusStats,
+    serviceStats,
+    totalRevenue,
+    totalWeight,
+  };
 }
 
 export async function addPostgresTrackingEvent(data: {

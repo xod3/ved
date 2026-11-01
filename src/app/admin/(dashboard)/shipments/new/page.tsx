@@ -233,12 +233,21 @@ export default function CreateShipmentPage() {
     setSubmitting(true);
     setErrorMsg(null);
 
+    const year = new Date().getFullYear();
+    let finalTrack = (shipment.tracking_number || '').trim().toUpperCase().replace(/[\s_]+/g, '-');
+    if (finalTrack.includes('MOLESTIAS') || finalTrack.includes('IPSUM')) {
+      finalTrack = '';
+    }
+    if (!finalTrack.startsWith('VED-')) {
+      finalTrack = `VED-${year}-${finalTrack.replace(/[^A-Z0-9]/g, '') || Math.floor(100100 + Math.random() * 899000)}`;
+    }
+
     try {
       const res = await fetch('/api/admin/shipments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          shipment,
+          shipment: { ...shipment, tracking_number: finalTrack },
           packages,
         }),
       });
@@ -436,12 +445,23 @@ export default function CreateShipmentPage() {
                 <input
                   type="text"
                   value={shipment.tracking_number}
-                  onChange={(e) => setShipment({ ...shipment, tracking_number: e.target.value.toUpperCase() })}
+                  onChange={(e) => {
+                    let val = e.target.value.toUpperCase().replace(/[\s_]+/g, '-');
+                    if (val.includes('MOLESTIAS') || val.includes('IPSUM')) {
+                      val = '';
+                    }
+                    setShipment({ ...shipment, tracking_number: val });
+                  }}
                   placeholder="e.g. VED-2026-000108"
+                  pattern="^VED-[A-Z0-9-]+$"
+                  title="Tracking ID must begin with VED- (e.g. VED-2026-000108)"
                   className="w-full pl-12 pr-4 py-3.5 bg-white text-slate-900 rounded-xl font-mono font-black text-lg sm:text-xl tracking-wider focus:outline-hidden focus:ring-4 focus:ring-purple-400 shadow-md"
                   required
                 />
               </div>
+              <p className="text-[11px] text-purple-200 mt-1">
+                Standard format: <span className="font-mono font-bold text-white">VED-2026-XXXXXX</span> (begins with VED-)
+              </p>
             </div>
 
             <div className="md:col-span-5">

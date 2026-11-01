@@ -35,7 +35,7 @@ export default function ShipmentsManagementPage() {
       const res = await fetch(`/api/admin/shipments?${params.toString()}`);
       const data = await res.json();
       if (data.shipments) {
-        setShipments(data.shipments);
+        setShipments(data.shipments.filter((s: any) => s.tracking_number && s.tracking_number.startsWith('VED-')));
       }
     } catch (err) {
       console.error(err);

@@ -357,6 +357,20 @@ export function initDb() {
             event_description = REPLACE(REPLACE(event_description, 'Nigeria', 'United Kingdom'), 'Lagos', 'London')
         WHERE country = 'Nigeria'
       `).run();
+
+      db.prepare(`
+        DELETE FROM tracking_events WHERE shipment_id IN (
+          SELECT id FROM shipments WHERE tracking_number NOT LIKE 'VED-%' OR UPPER(tracking_number) LIKE '%MOLESTIAS%' OR UPPER(tracking_number) LIKE '%IPSUM%'
+        )
+      `).run();
+      db.prepare(`
+        DELETE FROM shipment_packages WHERE shipment_id IN (
+          SELECT id FROM shipments WHERE tracking_number NOT LIKE 'VED-%' OR UPPER(tracking_number) LIKE '%MOLESTIAS%' OR UPPER(tracking_number) LIKE '%IPSUM%'
+        )
+      `).run();
+      db.prepare(`
+        DELETE FROM shipments WHERE tracking_number NOT LIKE 'VED-%' OR UPPER(tracking_number) LIKE '%MOLESTIAS%' OR UPPER(tracking_number) LIKE '%IPSUM%'
+      `).run();
     } catch (migErr) {
       console.warn('SQLite country migration notice:', migErr);
     }

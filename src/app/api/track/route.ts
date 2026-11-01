@@ -17,6 +17,16 @@ export async function GET(request: NextRequest) {
     const raw = trackingId.trim();
     const normalized = raw.toUpperCase().replace(/\s+/g, '-').replace(/_+/g, '-');
 
+    if (normalized.includes('MOLESTIAS') || normalized.includes('IPSUM')) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid tracking number. Official VED tracking numbers start with VED- (e.g. VED-2026-000102).',
+          notFound: true 
+        },
+        { status: 404 }
+      );
+    }
+
     let rawShipment: any = null;
 
     if (isPostgresConfigured()) {
