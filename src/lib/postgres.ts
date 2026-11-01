@@ -196,6 +196,26 @@ export async function initPostgresDb() {
     const shipmentCount = await sql`SELECT count(*)::int as count FROM shipments;`;
     if (shipmentCount[0].count === 0) {
       await seedPostgresShipments(sql);
+    } else {
+      // Migrate existing records to replace Nigeria with United Kingdom
+      await sql`
+        UPDATE shipments
+        SET receiver_country = 'United Kingdom',
+            destination_country = 'United Kingdom',
+            shipping_route = REPLACE(shipping_route, 'Nigeria', 'United Kingdom'),
+            receiver_city = CASE WHEN receiver_city = 'Lagos' THEN 'London' WHEN receiver_city = 'Abuja' THEN 'Manchester' WHEN receiver_city = 'Kano' THEN 'Birmingham' ELSE receiver_city END,
+            destination_city = CASE WHEN destination_city = 'Lagos' THEN 'London' WHEN destination_city = 'Abuja' THEN 'Manchester' WHEN destination_city = 'Kano' THEN 'Birmingham' ELSE destination_city END,
+            destination_facility = CASE WHEN destination_facility LIKE '%Murtala%' THEN 'Heathrow World Cargo Centre (LHR)' WHEN destination_facility LIKE '%Nnamdi%' THEN 'Manchester Airport World Freight Terminal (MAN)' WHEN destination_facility LIKE '%Kano%' THEN 'Birmingham Airport Cargo Terminal (BHX)' ELSE destination_facility END
+        WHERE destination_country = 'Nigeria' OR receiver_country = 'Nigeria';
+      `;
+      await sql`
+        UPDATE tracking_events
+        SET country = 'United Kingdom',
+            city = CASE WHEN city = 'Lagos' THEN 'London' WHEN city = 'Abuja' THEN 'Manchester' ELSE city END,
+            event_title = REPLACE(event_title, 'Nigeria', 'United Kingdom'),
+            event_description = REPLACE(REPLACE(event_description, 'Nigeria', 'United Kingdom'), 'Lagos', 'London')
+        WHERE country = 'Nigeria';
+      `;
     }
 
     tablesInitialized = true;
