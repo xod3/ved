@@ -82,7 +82,7 @@ export default async function PrintReceiptPage({ params }: Props) {
               OFFICIAL FREIGHT WAYBILL &amp; RECEIPT
             </span>
             <p className="text-sm font-mono font-bold mt-2">
-              Receipt No: RCT-{shipment.tracking_number.replace('VED-', '').replace('RKS-', '')}
+              Receipt No: RCT-{shipment.tracking_number.replace(/^VED-/, '')}
             </p>
             <p className="text-xs text-slate-500 font-mono">
               Date: {shipment.booking_date}

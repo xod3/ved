@@ -39,11 +39,6 @@ export default function AdminLoginPage() {
     }
   };
 
-  const fillCredentials = (userEmail: string, pass: string) => {
-    setEmail(userEmail);
-    setPassword(pass);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1d0436] via-[#240643] to-[#2e0854] flex flex-col justify-center items-center p-4">
       <div className="w-full max-w-md space-y-6">
@@ -138,36 +133,11 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          {/* Quick Demo Logins for Evaluator */}
-          <div className="pt-4 border-t border-purple-50 space-y-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-              Quick Staff Credentials:
-            </span>
-            <div className="grid grid-cols-1 gap-1.5 text-xs">
-              <button
-                type="button"
-                onClick={() => fillCredentials('admin@vedcourier.com', 'admin123')}
-                className="w-full text-left px-3 py-2.5 bg-purple-50 hover:bg-purple-100 rounded-xl border border-purple-200 flex items-center justify-between transition cursor-pointer"
-              >
-                <div>
-                  <span className="font-bold text-purple-950 block">Super Administrator</span>
-                  <span className="text-purple-700 font-mono text-[11px]">admin@vedcourier.com / admin123</span>
-                </div>
-                <span className="text-[10px] font-bold text-purple-800 bg-white px-2 py-0.5 rounded-md border border-purple-200">Fill</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fillCredentials('ops@vedcourier.com', 'ops123')}
-                className="w-full text-left px-3 py-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-between transition cursor-pointer"
-              >
-                <div>
-                  <span className="font-bold text-slate-800 block">Operations Manager</span>
-                  <span className="text-slate-600 font-mono text-[11px]">ops@vedcourier.com / ops123</span>
-                </div>
-                <span className="text-[10px] font-bold text-slate-700 bg-white px-2 py-0.5 rounded-md border border-slate-200">Fill</span>
-              </button>
-            </div>
+          {/* Security & Confidentiality Notice */}
+          <div className="pt-4 border-t border-purple-50 text-center">
+            <p className="text-[11px] text-slate-400">
+              Authorized operations &amp; dispatch personnel only. System activity is logged under international compliance standards.
+            </p>
           </div>
         </div>
 

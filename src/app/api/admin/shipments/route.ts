@@ -25,10 +25,10 @@ export async function GET(request: NextRequest) {
       if (!trackingNumber) {
         try {
           trackingNumber = generateNextTrackingNumber();
-        } catch (e) {
-          const year = new Date().getFullYear();
-          const rand = Math.floor(100100 + Math.random() * 899000);
-          trackingNumber = `VED-${year}-${rand}`;
+        } catch {
+          const b1 = Math.floor(1000 + Math.random() * 9000);
+          const b2 = Math.floor(10000 + Math.random() * 90000);
+          trackingNumber = `VED-${b1}-${b2}`;
         }
       }
       return NextResponse.json({ success: true, tracking_number: trackingNumber });
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
 
     if (!trackingNumber || !trackingNumber.startsWith('VED-')) {
       if (trackingNumber) {
-        trackingNumber = `VED-${year}-${trackingNumber.replace(/[^A-Z0-9]/g, '')}`;
+        trackingNumber = `VED-${trackingNumber.replace(/[^A-Z0-9-]/g, '')}`;
       } else {
         trackingNumber = isPostgresConfigured() ? await generateUniqueTrackingNumber() : generateNextTrackingNumber();
       }

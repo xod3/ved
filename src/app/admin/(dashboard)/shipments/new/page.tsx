@@ -81,21 +81,21 @@ export default function CreateShipmentPage() {
     shipping_route: 'United States → United Kingdom',
 
     // Customs & Compliance
-    hs_code: '8471.80.10',
-    declared_value: 5000,
+    hs_code: '',
+    declared_value: 0,
     currency: 'USD',
     customs_declaration_ref: '',
     duty_status: 'Unpaid',
     restricted_review_status: 'Cleared',
 
     // Financial
-    shipping_fee: 450,
-    handling_fee: 50,
-    insurance_fee: 80,
-    customs_charges: 60,
+    shipping_fee: 0,
+    handling_fee: 0,
+    insurance_fee: 0,
+    customs_charges: 0,
     discount: 0,
     payment_status: 'Pending',
-    payment_method: 'Bank Transfer',
+    payment_method: 'Bank Wire',
 
     // Notes
     customer_notes: '',
@@ -132,32 +132,32 @@ export default function CreateShipmentPage() {
           tracking_number: data.tracking_number,
         }));
       } else {
-        const year = new Date().getFullYear();
-        const rand = Math.floor(100100 + Math.random() * 899000);
-        setShipment((prev) => ({ ...prev, tracking_number: `VED-${year}-${rand}` }));
+        const b1 = Math.floor(1000 + Math.random() * 9000);
+        const b2 = Math.floor(10000 + Math.random() * 90000);
+        setShipment((prev) => ({ ...prev, tracking_number: `VED-${b1}-${b2}` }));
       }
     } catch {
-      const year = new Date().getFullYear();
-      const rand = Math.floor(100100 + Math.random() * 899000);
-      setShipment((prev) => ({ ...prev, tracking_number: `VED-${year}-${rand}` }));
+      const b1 = Math.floor(1000 + Math.random() * 9000);
+      const b2 = Math.floor(10000 + Math.random() * 90000);
+      setShipment((prev) => ({ ...prev, tracking_number: `VED-${b1}-${b2}` }));
     }
   };
 
   // Multi-package state
   const [packages, setPackages] = useState<any[]>([
     {
-      description: 'Industrial Electronic Components',
+      description: '',
       package_type: 'Box / Carton',
       quantity: 1,
-      weight: 12.5,
+      weight: '',
       weight_unit: 'kg',
-      length: 45,
-      width: 35,
-      height: 30,
+      length: '',
+      width: '',
+      height: '',
       dimension_unit: 'cm',
-      declared_value: 5000,
+      declared_value: 0,
       fragile: 0,
-      handling_instructions: 'Handle with care. Keep upright.',
+      handling_instructions: '',
     }
   ]);
 
@@ -239,7 +239,9 @@ export default function CreateShipmentPage() {
       finalTrack = '';
     }
     if (!finalTrack.startsWith('VED-')) {
-      finalTrack = `VED-${year}-${finalTrack.replace(/[^A-Z0-9]/g, '') || Math.floor(100100 + Math.random() * 899000)}`;
+      const b1 = Math.floor(1000 + Math.random() * 9000);
+      const b2 = Math.floor(10000 + Math.random() * 90000);
+      finalTrack = `VED-${b1}-${b2}`;
     }
 
     try {
@@ -431,7 +433,7 @@ export default function CreateShipmentPage() {
               className="bg-white/10 hover:bg-white/20 text-purple-100 hover:text-white px-4 py-2.5 rounded-xl text-xs font-bold border border-white/20 transition flex items-center gap-2 shrink-0 cursor-pointer"
             >
               <RefreshCw className="w-4 h-4 text-purple-300" />
-              Generate Next Sequence ID
+              Generate Randomized Waybill ID
             </button>
           </div>
 
@@ -452,15 +454,15 @@ export default function CreateShipmentPage() {
                     }
                     setShipment({ ...shipment, tracking_number: val });
                   }}
-                  placeholder="e.g. VED-2026-000108"
+                  placeholder="e.g. VED-8492-30194"
                   pattern="^VED-[A-Z0-9-]+$"
-                  title="Tracking ID must begin with VED- (e.g. VED-2026-000108)"
+                  title="Tracking ID must begin with VED- (e.g. VED-8492-30194)"
                   className="w-full pl-12 pr-4 py-3.5 bg-white text-slate-900 rounded-xl font-mono font-black text-lg sm:text-xl tracking-wider focus:outline-hidden focus:ring-4 focus:ring-purple-400 shadow-md"
                   required
                 />
               </div>
               <p className="text-[11px] text-purple-200 mt-1">
-                Standard format: <span className="font-mono font-bold text-white">VED-2026-XXXXXX</span> (begins with VED-)
+                Standard format: <span className="font-mono font-bold text-white">VED-XXXX-XXXXX</span> (randomized non-sequential waybill ID)
               </p>
             </div>
 

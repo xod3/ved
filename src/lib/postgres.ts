@@ -452,12 +452,11 @@ async function seedPostgresShipments(sql: any) {
 
 export async function generateUniqueTrackingNumber(requested?: string): Promise<string> {
   const sql = getSql();
-  const year = new Date().getFullYear();
 
   if (requested && requested.trim()) {
-    let clean = requested.trim().toUpperCase().replace(/\s+/g, '-').replace(/_+/g, '-');
+    let clean = requested.trim().toUpperCase().replace(/[\s_]+/g, '-');
     if (!clean.startsWith('VED-')) {
-      clean = `VED-${year}-${clean.replace(/[^A-Z0-9]/g, '')}`;
+      clean = `VED-${clean.replace(/[^A-Z0-9-]/g, '')}`;
     }
     if (sql) {
       try {
@@ -472,33 +471,24 @@ export async function generateUniqueTrackingNumber(requested?: string): Promise<
     return clean;
   }
 
+  // Generate randomized non-sequential waybill number
   if (sql) {
-    try {
-      const rows = await sql`
-        SELECT tracking_number FROM shipments
-        WHERE tracking_number LIKE ${`VED-${year}-%`}
-        ORDER BY tracking_number DESC
-        LIMIT 50;
-      `;
-      let maxNum = 106;
-      if (rows && rows.length > 0) {
-        for (const r of rows) {
-          const m = String(r.tracking_number).match(/VED-\d{4}-(\d+)/);
-          if (m) {
-            const val = parseInt(m[1], 10);
-            if (val > maxNum) maxNum = val;
-          }
-        }
+    for (let i = 0; i < 10; i++) {
+      const block1 = Math.floor(1000 + Math.random() * 9000);
+      const block2 = Math.floor(10000 + Math.random() * 90000);
+      const candidate = `VED-${block1}-${block2}`;
+      try {
+        const rows = await sql`SELECT id FROM shipments WHERE tracking_number = ${candidate} LIMIT 1;`;
+        if (rows.length === 0) return candidate;
+      } catch {
+        return candidate;
       }
-      const next = maxNum + 1;
-      return `VED-${year}-${String(next).padStart(6, '0')}`;
-    } catch (err) {
-      console.warn('Error fetching highest tracking sequence in Postgres:', err);
     }
   }
 
-  const randomSuffix = Math.floor(100100 + Math.random() * 899000);
-  return `VED-${year}-${randomSuffix}`;
+  const block1 = Math.floor(1000 + Math.random() * 9000);
+  const block2 = Math.floor(10000 + Math.random() * 90000);
+  return `VED-${block1}-${block2}`;
 }
 
 export async function createPostgresShipment(data: any, packages: any[]) {
@@ -512,7 +502,7 @@ export async function createPostgresShipment(data: any, packages: any[]) {
   
   if (!trackingNumber || !trackingNumber.startsWith('VED-')) {
     if (trackingNumber) {
-      trackingNumber = `VED-${year}-${trackingNumber.replace(/[^A-Z0-9]/g, '')}`;
+      trackingNumber = `VED-${trackingNumber.replace(/[^A-Z0-9-]/g, '')}`;
     } else {
       trackingNumber = await generateUniqueTrackingNumber();
     }

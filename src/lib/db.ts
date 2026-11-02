@@ -1134,24 +1134,19 @@ function insertShipmentWithDetails(shipment: any, packages: any[], events: any[]
   }
 }
 
-// Generate sequential, unguessable, atomic tracking number: VED-2026-000105
+// Generate randomized non-sequential tracking number in format: VED-XXXX-XXXXX
 export function generateNextTrackingNumber(): string {
   initDb();
-  const year = new Date().getFullYear();
-  const tx = db.transaction(() => {
-    let row = db.prepare('SELECT last_number FROM tracking_sequence WHERE year = ?').get(year) as { last_number: number } | undefined;
-    let nextNum = 101;
-    if (row) {
-      nextNum = row.last_number + 1;
-      db.prepare('UPDATE tracking_sequence SET last_number = ? WHERE year = ?').run(nextNum, year);
-    } else {
-      db.prepare('INSERT INTO tracking_sequence (year, last_number) VALUES (?, ?)').run(year, nextNum);
-    }
-    const padded = String(nextNum).padStart(6, '0');
-    return `VED-${year}-${padded}`;
-  });
-
-  return tx();
+  for (let i = 0; i < 10; i++) {
+    const block1 = Math.floor(1000 + Math.random() * 9000);
+    const block2 = Math.floor(10000 + Math.random() * 90000);
+    const candidate = `VED-${block1}-${block2}`;
+    const row = db.prepare('SELECT id FROM shipments WHERE tracking_number = ?').get(candidate);
+    if (!row) return candidate;
+  }
+  const block1 = Math.floor(1000 + Math.random() * 9000);
+  const block2 = Math.floor(10000 + Math.random() * 90000);
+  return `VED-${block1}-${block2}`;
 }
 
 // Helper query functions

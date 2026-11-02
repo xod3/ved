@@ -401,7 +401,7 @@ export default function HomePage() {
                           type="text"
                           value={trackingId}
                           onChange={(e) => setTrackingId(e.target.value)}
-                          placeholder="Enter Waybill / Tracking ID (e.g. VED-2026-000101)"
+                          placeholder="Enter Waybill / Tracking ID (e.g. VED-8492-30194)"
                           className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-purple-200 rounded-xl text-slate-900 font-medium text-sm focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-purple-700 transition"
                           required
                         />
@@ -418,7 +418,7 @@ export default function HomePage() {
                     {/* Official Format Helper */}
                     <div className="flex items-center gap-2 flex-wrap text-xs pt-1 text-slate-500">
                       <span className="font-semibold text-[11px]">Official Format:</span>
-                      <span className="font-mono font-bold text-purple-900 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 text-[11px]">VED-2026-XXXXXX</span>
+                      <span className="font-mono font-bold text-purple-900 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 text-[11px]">VED-XXXX-XXXXX</span>
                       <span className="text-[11px] text-slate-400">• Real-time multi-carrier tracking</span>
                     </div>
                   </div>
@@ -715,95 +715,89 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── 4. VED MOBILE APP / DIGITAL EXPERIENCE ─────────── */}
+      {/* ─── 4. CUSTOMER SATISFACTION & MOBILE ECOSYSTEM ─────────── */}
       <section className="py-20 bg-gradient-to-r from-[#2e0854] via-[#3b0764] to-[#240643] text-white overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             <div className="lg:col-span-7 space-y-6">
               <span className="text-xs font-black tracking-widest text-purple-300 uppercase bg-purple-900/80 px-3.5 py-1 rounded-full border border-purple-500/30">
-                VEDGo MOBILE ECOSYSTEM
+                DOORSTEP EXCELLENCE &amp; MOBILE ECOSYSTEM
               </span>
               <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-                Ship, Track &amp; Manage Deliveries On The Go
+                Seamless Global Deliveries Straight to Your Door
               </h2>
               <p className="text-purple-200 text-sm sm:text-base leading-relaxed max-w-xl">
-                Experience logistics without friction. Book doorstep pickups in seconds, track packages in real-time with satellite GPS, receive instant delivery notifications, and print scannable barcode waybills.
+                Experience logistics without friction. Every package is handled with precision care, monitored by real-time GPS tracking, and delivered right to your recipient's hands with digital proof of delivery.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="flex items-start gap-3 bg-purple-950/60 p-4 rounded-2xl border border-purple-800/60">
-                  <QrCode className="w-6 h-6 text-purple-400 shrink-0 mt-0.5" />
+                  <ShieldCheck className="w-6 h-6 text-purple-400 shrink-0 mt-0.5" />
                   <div>
-                    <h5 className="font-bold text-sm text-white">Scannable QR Waybills</h5>
-                    <p className="text-xs text-purple-300 mt-0.5">Instant barcode generation on your device.</p>
+                    <h5 className="font-bold text-sm text-white">Insured White-Glove Handover</h5>
+                    <p className="text-xs text-purple-300 mt-0.5">End-to-end security protocols for every consignment.</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3 bg-purple-950/60 p-4 rounded-2xl border border-purple-800/60">
-                  <Smartphone className="w-6 h-6 text-purple-400 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <h5 className="font-bold text-sm text-white">Real-Time Push Alerts</h5>
-                    <p className="text-xs text-purple-300 mt-0.5">Checkpoints sent straight to your phone.</p>
+                    <h5 className="font-bold text-sm text-white">Instant Proof of Delivery</h5>
+                    <p className="text-xs text-purple-300 mt-0.5">Digital recipient confirmation stamped in real time.</p>
                   </div>
                 </div>
               </div>
 
-              {/* App Badges */}
+              {/* App Badges - Coming Soon */}
               <div className="flex items-center gap-4 pt-4 flex-wrap">
-                <div className="bg-black/60 hover:bg-black text-white px-5 py-3 rounded-2xl border border-purple-700/60 flex items-center gap-3 cursor-pointer transition">
+                <div className="bg-black/60 text-white px-5 py-3 rounded-2xl border border-purple-700/60 flex items-center gap-3">
                   <Smartphone className="w-6 h-6 text-purple-400" />
                   <div>
-                    <span className="text-[10px] text-purple-300 uppercase block leading-none">Download On</span>
-                    <span className="font-bold text-sm">Apple App Store</span>
+                    <span className="text-[10px] text-purple-300 uppercase block leading-none">Apple App Store</span>
+                    <span className="font-bold text-sm text-purple-200">Coming Soon</span>
                   </div>
                 </div>
 
-                <div className="bg-black/60 hover:bg-black text-white px-5 py-3 rounded-2xl border border-purple-700/60 flex items-center gap-3 cursor-pointer transition">
+                <div className="bg-black/60 text-white px-5 py-3 rounded-2xl border border-purple-700/60 flex items-center gap-3">
                   <QrCode className="w-6 h-6 text-emerald-400" />
                   <div>
-                    <span className="text-[10px] text-purple-300 uppercase block leading-none">Get It On</span>
-                    <span className="font-bold text-sm">Google Play Store</span>
+                    <span className="text-[10px] text-purple-300 uppercase block leading-none">Google Play Store</span>
+                    <span className="font-bold text-sm text-emerald-200">Coming Soon</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Mobile Visual Simulation */}
+            {/* Happy Customer Receiving Package Image */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-sm bg-white rounded-3xl p-4 shadow-2xl text-slate-900 border-4 border-purple-400/40">
-                <div className="bg-[#2e0854] text-white p-4 rounded-2xl space-y-3 mb-4">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold flex items-center gap-1.5">
-                      <Package className="w-4 h-4 text-purple-300" /> VED Express Mobile
+              <div className="relative w-full max-w-md">
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-purple-400/30 group">
+                  <Image
+                    src="/images/happy-customer-delivery.jpg"
+                    alt="Happy customer receiving package from VED Courier Logistics"
+                    width={600}
+                    height={450}
+                    className="w-full h-80 sm:h-96 object-cover transform transition duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
+                  
+                  {/* Floating Trust Badge */}
+                  <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl text-slate-900 border border-purple-100 shadow-xl flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-[11px] font-extrabold uppercase tracking-wide text-purple-900 block">Verified Doorstep Delivery</span>
+                        <p className="text-xs font-semibold text-slate-600">Fast, safe &amp; intact across 230+ countries</p>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-300 shrink-0">
+                      100% SATISFACTION
                     </span>
-                    <span className="text-[10px] bg-emerald-500 text-white font-black px-2 py-0.5 rounded-full">LIVE</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-purple-300 uppercase font-bold block">Current Active Waybill</span>
-                    <span className="font-mono font-black text-sm">VED-2026-000101</span>
-                    <span className="block text-xs text-emerald-300 mt-0.5 font-bold">Customs Cleared • Out for Delivery</span>
                   </div>
                 </div>
-
-                <div className="space-y-3 text-xs">
-                  <div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl">
-                    <span className="font-bold text-purple-900">Estimated Delivery</span>
-                    <span className="font-semibold text-slate-700">Today by 16:00</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                    <span className="font-bold text-slate-700">Destination</span>
-                    <span className="font-semibold text-slate-700">Shanghai Gateway (PVG)</span>
-                  </div>
-                </div>
-
-                <Link
-                  href="/track"
-                  className="mt-4 w-full bg-purple-700 hover:bg-purple-800 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition"
-                >
-                  <span>Track Your Package Now</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
               </div>
             </div>
 

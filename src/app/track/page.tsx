@@ -132,7 +132,7 @@ function TrackContent() {
                 type="text"
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Enter Waybill / Tracking ID (e.g. VED-2026-000101)"
+                placeholder="Enter Waybill / Tracking ID (e.g. VED-8492-30194)"
                 className="w-full pl-12 pr-4 py-4 bg-white text-slate-900 rounded-xl font-medium text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-400 shadow-lg"
                 required
               />
@@ -159,7 +159,7 @@ function TrackContent() {
           {/* Official Format Helper */}
           <div className="pt-2 flex items-center gap-2 flex-wrap text-xs text-purple-200">
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span>Official Tracking Format: <strong className="font-mono text-white">VED-YYYY-XXXXXX</strong> (as printed on your dispatch waybill or booking receipt)</span>
+            <span>Official Tracking Format: <strong className="font-mono text-white">VED-XXXX-XXXXX</strong> (as printed on your dispatch waybill or booking receipt)</span>
           </div>
         </div>
       </section>
@@ -184,18 +184,16 @@ function TrackContent() {
             </div>
             <h3 className="text-xl font-bold text-slate-900">Waybill Record Not Found</h3>
             <p className="text-sm text-slate-500 max-w-sm mx-auto">{error}</p>
-            <div className="flex items-center justify-center gap-4 text-sm pt-2">
-              <button
-                onClick={() => {
-                  setInputVal('VED-2026-000101');
-                  router.push('/track?id=VED-2026-000101');
-                  performLookup('VED-2026-000101');
-                }}
-                className="bg-purple-700 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-purple-800 transition text-sm"
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm pt-2">
+              <a
+                href="https://wa.me/18083010314"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold transition text-xs flex items-center gap-2 shadow-sm"
               >
-                Try Demo ID VED-2026-000101
-              </button>
-              <Link href="/contact" className="text-purple-700 hover:text-purple-900 font-semibold underline text-sm">
+                <span>Live WhatsApp Dispatch Desk</span>
+              </a>
+              <Link href="/contact" className="bg-purple-700 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-purple-800 transition text-xs">
                 Contact Support Desk
               </Link>
             </div>
@@ -212,16 +210,22 @@ function TrackContent() {
             <p className="text-sm text-slate-500 max-w-md mx-auto">
               Please enter the tracking waybill issued on your VED Courier booking confirmation, air waybill, or dispatch receipt.
             </p>
-            <button
-              onClick={() => {
-                setInputVal('VED-2026-000101');
-                router.push('/track?id=VED-2026-000101');
-                performLookup('VED-2026-000101');
-              }}
-              className="text-xs bg-purple-100 hover:bg-purple-200 text-purple-900 font-bold px-5 py-2.5 rounded-xl transition"
-            >
-              View Sample Record (US → China)
-            </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <Link
+                href="/contact"
+                className="text-xs bg-purple-700 hover:bg-purple-800 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-sm"
+              >
+                Book A Shipment Pickup
+              </Link>
+              <a
+                href="https://wa.me/18083010314"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs bg-purple-50 hover:bg-purple-100 text-purple-900 font-bold px-5 py-2.5 rounded-xl transition border border-purple-200"
+              >
+                Track via WhatsApp Desk
+              </a>
+            </div>
           </div>
         )}
 
